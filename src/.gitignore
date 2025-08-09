@@ -2,6 +2,9 @@
 
 # === Owned files start ===
 # account/personal-info/PersonalInfo.tsx
+# account/root/PageNav.tsx
+# account/root/Root.tsx
+# account/components/page/Page.tsx
 # shared/keycloak-ui-shared/masthead/KeycloakDropdown.tsx
 # shared/keycloak-ui-shared/masthead/Masthead.tsx
 # shared/keycloak-ui-shared/user-profile/MultiInputComponent.tsx
@@ -145,11 +148,8 @@
 /account/resources/ShareTheResource.tsx
 /account/root/header.module.css
 /account/root/Header.tsx
-/account/root/PageNav.tsx
-/account/root/Root.tsx
 /account/utils/formatDate.ts
 /account/utils/joinPath.ts
 /account/utils/useAccountAlerts.ts
 /account/utils/usePromise.ts
 /account/components/datalist/EmptyRow.tsx
-/account/components/page/Page.tsx
