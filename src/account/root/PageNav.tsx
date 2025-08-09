@@ -112,7 +112,7 @@ function NavMenuItem({ menuItem }: NavMenuItemProps) {
             title={t(menuItem.label)}
             isActive={isActive}
             isExpanded={isActive}
-            className="!text-gray-800"
+            className="custom-nav-expandable"
         >
             {menuItem.children
                 .filter(menuItem =>
@@ -160,9 +160,7 @@ export const NavLink = ({
                 // PatternFly does not have the correct type for this event, so we need to cast it.
                 handleClick(event as unknown as ReactMouseEvent<HTMLAnchorElement>)
             }
-            className={`!text-gray-800 custom-nav-item !hover:bg-gray-100 !hover:text-[#0066e5] ${
-                isActive ? "bg-gray-100 !text-[#0066E5] !font-semibold" : "!text-gray-800"
-            }`}
+            className="custom-nav-item"
         >
             {children}
         </NavItem>

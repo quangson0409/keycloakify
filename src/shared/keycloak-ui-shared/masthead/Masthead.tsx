@@ -105,7 +105,7 @@ const KeycloakMasthead = ({
                 </PageToggleButton>
             </MastheadToggle>
             <MastheadBrand {...brandProps}>
-                <img src={src} alt={alt} className={"h-20"} />
+                <img src={src} alt={alt} className={"h-28"} />
             </MastheadBrand>
             <MastheadContent>
                 {toolbar}
