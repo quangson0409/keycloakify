@@ -1,103 +1,103 @@
-# Keycloakify Starter Project
+# Keycloakify Starter Project - Custom Keycloak Theme with React & Tailwind
 
-This project is a starter template for building custom Keycloak themes using Keycloakify. It provides a modern development setup with React, TypeScript, Vite, and Tailwind CSS, along with PatternFly for UI components.
+This project is a starter template for building custom Keycloak themes using [Keycloakify](https://www.keycloakify.dev/). It provides a modern development environment with React, TypeScript, Vite, and Tailwind CSS, along with PatternFly and Material-UI (MUI) for UI components.
 
 ## Technologies Used
 
-*   **Keycloakify**: A tool for building custom Keycloak themes with React.
-*   **React**: A JavaScript library for building user interfaces.
-*   **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
-*   **Vite**: A fast build tool that provides a lightning-fast development experience.
-*   **Tailwind CSS**: A utility-first CSS framework for rapidly building custom designs.
-*   **PatternFly**: An open-source design system for enterprise web applications.
-*   **MUI (Material-UI)**: A comprehensive suite of UI tools for building React applications.
-*   **i18next**: An internationalization framework for React applications.
-*   **React Router DOM**: For declarative routing in React applications.
-*   **ESLint & Prettier**: For code linting and formatting.
-*   **Storybook**: For developing UI components in isolation.
+- **Keycloakify**: Build custom Keycloak themes with React.
+- **React**: JavaScript library for building user interfaces.
+- **TypeScript**: Typed superset of JavaScript.
+- **Vite**: Fast build tool for modern web projects.
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development.
+- **PatternFly**: Open source design system for enterprise applications.
+- **Material-UI (MUI)**: Comprehensive UI toolkit for React.
+- **i18next**: Internationalization framework for React apps.
+- **React Router DOM**: Routing for React applications.
+- **ESLint & Prettier**: Code linting and formatting.
+- **Storybook**: Develop and test UI components in isolation.
 
 ## Project Structure
 
-The project is structured to separate Keycloak login and account themes, allowing for independent customization.
+The project is organized to separate the `login` and `account` Keycloak themes for independent customization.
 
-*   `src/login/`: Contains files related to the Keycloak login theme.
-*   `src/account/`: Contains files related to the Keycloak account theme.
-*   `src/shared/`: Contains shared components and utilities used across both themes.
-*   `src/styles/`: Global CSS styles, including Tailwind CSS imports.
-*   `src/kc.gen.tsx`: Generated file by Keycloakify for theme-specific types and components.
-*   `src/main.tsx`: Entry point of the React application.
+- `src/login/`: Keycloak login theme components.
+- `src/account/`: Keycloak account theme components.
+- `src/shared/`: Shared components and utilities.
+- `src/styles/`: Global CSS files, including Tailwind imports.
+- `src/theme/`: Material-UI theme customizations.
+- `src/kc.gen.tsx`: Auto-generated types and components by Keycloakify.
+- `src/main.tsx`: Application entry point.
 
-## Key Features
+## Main Features
 
-*   **Custom Keycloak Themes**: Easily customize both login and account pages.
-*   **React Components**: Build UI using React, leveraging modern hooks and patterns.
-*   **TypeScript Support**: Enhanced code quality and developer experience with static typing.
-*   **Fast Development**: Vite provides hot module replacement and quick build times.
-*   **Styling**: Utilize Tailwind CSS for rapid styling and PatternFly for enterprise-grade UI components.
-*   **Internationalization**: `i18next` is integrated for multi-language support.
-*   **Storybook Integration**: Develop and test UI components in isolation.
+- **Custom Keycloak themes**: Easily customize both login and account pages.
+- **React components**: Build UI with modern React hooks and patterns.
+- **TypeScript support**: Improve code quality and developer experience.
+- **Fast development**: Vite provides HMR and quick builds.
+- **Flexible styling**: Use Tailwind CSS for rapid styling and PatternFly/MUI for enterprise-grade UI components.
+- **Internationalization**: Built-in i18next for multi-language support.
+- **Storybook integration**: Develop and test UI components in isolation.
 
 ## Getting Started
 
-### Prerequisites
+### Requirements
 
-*   Node.js (version 18 or 20+)
-*   npm or Yarn
+- Node.js (version 18 or 20+)
+- Yarn (recommended) or npm
 
 ### Installation
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/quangson0409/keycloakify.git
-    cd keycloakify-starter
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    # or
-    yarn install
-    ```
-    The `postinstall` script will automatically run `keycloakify sync-extensions` to copy necessary files from Keycloakify packages.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/quangson0409/keycloakify.git
+   cd keycloakify-starter
+   ```
+2. Install dependencies:
+   ```bash
+   yarn install
+   ```
+   The `postinstall` script will automatically run `keycloakify sync-extensions` to copy required files from Keycloakify packages.
 
 ### Development
 
-*   **Run in development mode**:
-    ```bash
-    npm run dev
-    # or
-    yarn dev
-    ```
-    This will start the Vite development server. You can uncomment the block in `src/main.tsx` to test specific Keycloak pages locally.
+- **Start development server**:
 
-*   **Run Storybook**:
-    ```bash
-    npm run storybook
-    # or
-    yarn storybook
-    ```
-    This will launch Storybook, allowing you to develop and test UI components in isolation.
+  ```bash
+  yarn dev
+  ```
 
-### Building for Production
+  This will start the Vite development server. You can uncomment code blocks in `src/main.tsx` to test specific Keycloak pages locally.
 
-*   **Build the React application**:
-    ```bash
-    npm run build
-    # or
-    yarn build
-    ```
+- **Run Storybook**:
+  ```bash
+  yarn storybook
+  ```
+  This will launch Storybook for isolated UI component development and testing.
 
-*   **Build the Keycloak theme**:
-    ```bash
-    npm run build-keycloak-theme
-    # or
-    yarn build-keycloak-theme
-    ```
-    This command first builds the React application and then uses `keycloakify build` to package it into a Keycloak theme. The output will be in the `dist/keycloak-theme` directory.
+### Production Build
+
+- **Build React app**:
+
+  ```bash
+  yarn build
+  ```
+
+- **Build Keycloak theme**:
+  ```bash
+  yarn build-keycloak-theme
+  ```
+  This will first build the React app, then use `keycloakify build` to package it as a Keycloak theme. The result will be in the `dist/keycloak-theme` directory.
+
+## Main Scripts
+
+- `yarn dev`: Start development server with Vite.
+- `yarn build`: Build app for production.
+- `yarn build-keycloak-theme`: Build Keycloak theme for deployment.
+- `yarn storybook`: Run Storybook for component development.
+- `yarn format`: Format codebase with Prettier.
 
 ## Important Notes
 
-*   **Keycloakify Ownership**: Some files (e.g., `src/account/root/Root.tsx`, `src/account/routes.tsx`) are "claimed" by Keycloakify. If you modify these files, you might need to run `npx keycloakify own --path "path/to/file.tsx"` to prevent them from being overwritten during `sync-extensions`. To revert changes and restore the original content, use `npx keycloakify own --path "path/to/file.tsx" --revert`.
-*   **Local Testing**: For local development, you can mock the Keycloak context by uncommenting the relevant block in `src/main.tsx` and specifying the `pageId`. Remember to comment it back before building for production to avoid increasing bundle size.
-*   **Theme Customization**: The project uses `accountThemeImplementation: "Single-Page"` in `vite.config.ts`, indicating that the account theme is built as a single-page application.
-*   **PatternFly and Tailwind CSS**: The project integrates both PatternFly and Tailwind CSS. Ensure proper usage to avoid conflicts and maintain a consistent UI.
-*   **Internationalization**: Translations are handled via `i18next`. Ensure all user-facing strings are properly internationalized.
+- **Keycloakify file ownership**: Some files (e.g., `src/account/root/Root.tsx`) are "claimed" by Keycloakify. If you modify these files, you may need to run `npx keycloakify own --path "path/to/file.tsx"` to prevent them from being overwritten during `sync-extensions`.
+- **Local testing**: For local development, you can simulate Keycloak context by uncommenting relevant code blocks in `src/main.tsx` and specifying `pageId`. Remember to comment them out before production build to avoid increasing bundle size.
+- **Theme customization**: The project uses `accountThemeImplementation: "Single-Page"` in `vite.config.ts`, meaning the account theme is built as a single-page application (SPA).
