@@ -24,7 +24,9 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    IconButton
+    IconButton,
+    CircularProgress,
+    Backdrop
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -55,6 +57,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
 
     const [termsOpen, setTermsOpen] = useState(false);
     const [privacyOpen, setPrivacyOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleTermsOpen = () => setTermsOpen(true);
     const handleTermsClose = () => setTermsOpen(false);
@@ -63,6 +66,15 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
 
     useEffect(() => {
         document.title = documentTitle ?? msgStr("loginTitle", realm.displayName);
+    }, []);
+
+    // Loading effect
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000); // Loading duration: 1.5 seconds
+
+        return () => clearTimeout(timer);
     }, []);
 
     useSetClassName({
@@ -77,13 +89,61 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
 
     const { isReadyToRender } = useInitialize({ kcContext, doUseDefaultCss });
 
-    if (!isReadyToRender) {
-        return null;
+    if (!isReadyToRender || isLoading) {
+        return (
+            <Backdrop
+                sx={{
+                    color: '#fff',
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                    backgroundColor: 'rgba(245, 245, 245, 0.9)',
+                    backdropFilter: 'blur(8px)'
+                }}
+                open={true}
+            >
+                <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 3
+                }}>
+                    <img
+                        src={`${url.resourcesPath}/img/audaks-public.png`}
+                        alt="Audaks Cloud"
+                        style={{
+                            width: "120px",
+                            height: "110px",
+                            opacity: 0.8
+                        }}
+                    />
+                    <CircularProgress
+                        size={60}
+                        thickness={4}
+                        sx={{
+                            color: 'primary.main',
+                            '& .MuiCircularProgress-circle': {
+                                strokeLinecap: 'round',
+                            }
+                        }}
+                    />
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            color: 'text.primary',
+                            fontWeight: 500,
+                            opacity: 0.8
+                        }}
+                    >
+                        {msgStr("loadingText")}
+                    </Typography>
+                </Box>
+            </Backdrop>
+        );
     }
 
     return (
         <Box
             sx={{
+                position: "relative",
                 width: "100%",
                 minHeight: "100vh",
                 display: "flex",
@@ -120,12 +180,11 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                 >
                     <Toolbar sx={{ justifyContent: "center" }}>
                         <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-                            <img src="/audaks-public.png" style={{ width: "110px", height: "100px" }} />
+                            <img src={`${url.resourcesPath}/img/audaks-public.png`} alt="Audaks Cloud" style={{ width: "110px", height: "100px" }} />
                         </Box>
                     </Toolbar>
                 </AppBar>
                 {/* Main Content */}
-
                 <Box
                     component="main"
                     sx={{
@@ -134,6 +193,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                         justifyContent: "center",
                         flexDirection: "column",
                         minHeight: "calc(100vh - 165px)", // 100px header + 65px footer
+                        flex: 1,
                     }}
                 >
                     {/* {displayMessage &&
@@ -198,14 +258,13 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
 
                 {/* Footer */}
                 <footer style={{
-                    position: "absolute",
-                    bottom: 0,
                     width: "100%",
-                    padding: "16px 0",
+                    padding: "8px 0",
                     background: "rgba(255, 255, 255, 0.9)",
                     backdropFilter: "blur(8px)",
                     borderTop: "1px solid rgba(0, 0, 0, 0.1)",
-                    zIndex: 2
+                    zIndex: 2,
+                    // marginTop: "auto"
                 }}>
                     <Container maxWidth="lg">
                         <Grid container alignItems="center" justifyContent="space-between">

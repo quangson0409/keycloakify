@@ -40,7 +40,9 @@
         "react-dom": "^18.2.0",
         "react-hook-form": "^7.54.2",
         "react-i18next": "^15.4.1",
-        "react-router-dom": "^6.30.0"
+        "react-router-dom": "^6.30.0",
+        "string-width": "4.2.3",
+        "strip-ansi": "6.0.1"
     },
     "devDependencies": {
         "@eslint/js": "^9.15.0",

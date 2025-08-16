@@ -118,7 +118,7 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
                         }}
                     >
                         {/* You can add illustration or logo here */}
-                        <img src="/login-banner.svg" />
+                        <img src={`${url.resourcesPath}/img/login-banner.svg`} alt="Login Banner" style={{ maxWidth: '100%', height: 'auto' }} />
                     </Box>
 
                     <Box sx={{ flex: 1, p: 4 }}>
@@ -259,12 +259,45 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
                                 </Button>
 
                                 {realm.registrationAllowed && !registrationDisabled && (
-                                    <Box sx={{ textAlign: 'center' }}>
-                                        <Typography variant="body2">
+                                    <Box sx={{
+                                        textAlign: 'center',
+                                        // mt: 2,
+                                        // p: 1,
+                                        // border: '1px solid red', // Debug border
+                                        // backgroundColor: 'rgba(0,255,0,0.1)' // Debug background
+                                    }}>
+                                        <Typography variant="body2" color="text.secondary">
                                             {msg("newUserRegister")}{" "}
-                                            <Link href={url.registrationUrl} underline="hover">
+                                            <a
+                                                href={url.registrationUrl}
+                                                style={{
+                                                    color: '#1976d2',
+                                                    textDecoration: 'none',
+                                                    fontWeight: 500,
+                                                    cursor: 'pointer',
+                                                    position: 'relative',
+                                                    zIndex: 9999,
+                                                    display: 'inline-block',
+                                                    padding: '4px 8px',
+                                                    // border: '1px solid blue' // Debug border for link
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    const target = e.currentTarget as HTMLAnchorElement;
+                                                    target.style.textDecoration = 'underline';
+                                                    // target.style.backgroundColor = 'rgba(25, 118, 210, 0.1)';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    const target = e.currentTarget as HTMLAnchorElement;
+                                                    target.style.textDecoration = 'none';
+                                                    target.style.backgroundColor = 'transparent';
+                                                }}
+                                                onClick={() => {
+                                                    console.log('Register link clicked!', url.registrationUrl);
+                                                    // Don't prevent default, let it navigate
+                                                }}
+                                            >
                                                 {msg("registerLink")}
-                                            </Link>
+                                            </a>
                                         </Typography>
                                     </Box>
                                 )}

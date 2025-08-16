@@ -7,6 +7,13 @@ import DefaultPage from "keycloakify/login/DefaultPage";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const Login = lazy(() => import("./pages/Login"));
+const Error = lazy(() => import("./pages/Error"));
+const LoginOtp = lazy(() => import("./pages/LoginOtp"));
+const LoginPageExpired = lazy(() => import("./pages/LoginPageExpired"));
+const LoginResetPassword = lazy(() => import("./pages/LoginResetPassword"));
+const LoginVerifyEmail = lazy(() => import("./pages/LoginVerifyEmail"));
+const LogoutConfirm = lazy(() => import("./pages/LogoutConfirm"));
+const Register = lazy(() => import("./pages/Register"));
 const UserProfileFormFields = lazy(
     () => import("keycloakify/login/UserProfileFormFields")
 );
@@ -51,6 +58,63 @@ function KcPageContextualized(props: { kcContext: KcContext }) {
                                     {...{ kcContext, i18n, classes }}
                                     Template={Template}
                                     doUseDefaultCss={true}
+                                />
+                            );
+                        case "error.ftl": return (
+                            <Error
+                                {...{ kcContext, i18n, classes }}
+                                Template={Template}
+                                doUseDefaultCss={true}
+                            />
+                        );
+                        case "login-otp.ftl":
+                            return (
+                                <LoginOtp
+                                    {...{ kcContext, i18n, classes }}
+                                    Template={Template}
+                                    doUseDefaultCss={true}
+                                />
+                            );
+                        case "login-page-expired.ftl":
+                            return (
+                                <LoginPageExpired
+                                    {...{ kcContext, i18n, classes }}
+                                    Template={Template}
+                                    doUseDefaultCss={true}
+                                />
+                            );
+                        case "login-reset-password.ftl":
+                            return (
+                                <LoginResetPassword
+                                    {...{ kcContext, i18n, classes }}
+                                    Template={Template}
+                                    doUseDefaultCss={true}
+                                />
+                            );
+                        case "login-verify-email.ftl":
+                            return (
+                                <LoginVerifyEmail
+                                    {...{ kcContext, i18n, classes }}
+                                    Template={Template}
+                                    doUseDefaultCss={true}
+                                />
+                            );
+                        case "logout-confirm.ftl":
+                            return (
+                                <LogoutConfirm
+                                    {...{ kcContext, i18n, classes }}
+                                    Template={Template}
+                                    doUseDefaultCss={true}
+                                />
+                            );
+                        case "register.ftl":
+                            return (
+                                <Register
+                                    {...{ kcContext, i18n, classes }}
+                                    Template={Template}
+                                    doUseDefaultCss={true}
+                                    UserProfileFormFields={UserProfileFormFields}
+                                    doMakeUserConfirmPassword={doMakeUserConfirmPassword}
                                 />
                             );
                         default:
