@@ -13,6 +13,7 @@
 # shared/keycloak-ui-shared/user-profile/TextAreaComponent.tsx
 # shared/keycloak-ui-shared/user-profile/TextComponent.tsx
 # shared/keycloak-ui-shared/user-profile/UserProfileFields.tsx
+# shared/keycloak-ui-shared/user-profile/UserProfileGroup.tsx
 # === Owned files end =====
 
 # === @keycloakify/keycloak-ui-shared v260200.0.0 ===
@@ -53,7 +54,6 @@
 /shared/keycloak-ui-shared/select/SingleSelect.tsx
 /shared/keycloak-ui-shared/select/TypeaheadSelect.tsx
 /shared/keycloak-ui-shared/user-profile/LocaleSelector.tsx
-/shared/keycloak-ui-shared/user-profile/UserProfileGroup.tsx
 /shared/keycloak-ui-shared/user-profile/utils.ts
 /shared/keycloak-ui-shared/utils/createNamedContext.ts
 /shared/keycloak-ui-shared/utils/darkMode.ts

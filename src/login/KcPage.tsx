@@ -14,8 +14,11 @@ const LoginResetPassword = lazy(() => import("./pages/LoginResetPassword"));
 const LoginVerifyEmail = lazy(() => import("./pages/LoginVerifyEmail"));
 const LogoutConfirm = lazy(() => import("./pages/LogoutConfirm"));
 const Register = lazy(() => import("./pages/Register"));
+// const UserProfileFormFields = lazy(
+//     () => import("keycloakify/login/UserProfileFormFields")
+// );
 const UserProfileFormFields = lazy(
-    () => import("keycloakify/login/UserProfileFormFields")
+    () => import("./UserProfileFormFields")
 );
 
 const doMakeUserConfirmPassword = true;

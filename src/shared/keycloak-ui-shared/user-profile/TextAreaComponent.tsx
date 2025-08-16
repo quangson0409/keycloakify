@@ -9,25 +9,44 @@
 
 // @ts-nocheck
 
-import { KeycloakTextArea } from "../controls/keycloak-text-area/KeycloakTextArea";
+import { TextField } from "@mui/material";
 import { UserProfileFieldProps } from "./UserProfileFields";
 import { UserProfileGroup } from "./UserProfileGroup";
-import { fieldName, isRequiredAttribute } from "./utils";
+import { fieldName, isRequiredAttribute, label } from "./utils";
 
 export const TextAreaComponent = (props: UserProfileFieldProps) => {
-    const { form, attribute } = props;
+    const { form, attribute, t } = props;
     const isRequired = isRequiredAttribute(attribute);
+
+    const fieldPath = fieldName(attribute.name);
+    const fieldError = form.formState.errors[fieldPath];
+    const hasError = Boolean(fieldError);
+
+    const fieldDisplayName = label(t, attribute.displayName, attribute.name);
+    const helpText = attribute.annotations?.inputHelperTextBefore as string;
+
+    const rows = (attribute.annotations?.["inputTypeRows"] as number) || 4;
+    const cols = attribute.annotations?.["inputTypeCols"] as number;
 
     return (
         <UserProfileGroup {...props}>
-            <KeycloakTextArea
+            <TextField
                 id={attribute.name}
-                data-testid={attribute.name}
-                {...form.register(fieldName(attribute.name))}
-                cols={attribute.annotations?.["inputTypeCols"] as number}
-                rows={attribute.annotations?.["inputTypeRows"] as number}
-                readOnly={attribute.readOnly}
-                isRequired={isRequired}
+                name={fieldPath}
+                label={fieldDisplayName}
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={rows}
+                required={isRequired}
+                disabled={attribute.readOnly}
+                error={hasError}
+                helperText={hasError ? fieldError?.message : helpText}
+                size="medium"
+                {...form.register(fieldPath)}
+                inputProps={{
+                    ...(cols && { cols })
+                }}
             />
         </UserProfileGroup>
     );

@@ -10,15 +10,13 @@
 // @ts-nocheck
 
 import {
+    TextField,
     Button,
-    ButtonVariant,
-    InputGroup,
-    TextInput,
-    TextInputProps,
-    TextInputTypes,
-    InputGroupItem
-} from "../../@patternfly/react-core";
-import { MinusCircleIcon, PlusCircleIcon } from "../../@patternfly/react-icons";
+    Box,
+    IconButton,
+    InputAdornment
+} from "@mui/material";
+import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import { type TFunction } from "i18next";
 import { Fragment, useEffect, useMemo } from "react";
 import { FieldPath, UseFormReturn, useWatch } from "react-hook-form";
@@ -48,7 +46,7 @@ export const MultiInputComponent = ({
     </UserProfileGroup>
 );
 
-export type MultiLineInputProps = Omit<TextInputProps, "form"> & {
+export type MultiLineInputProps = Omit<any, "form"> & {
     t: TFunction;
     name: FieldPath<UserFormFields>;
     form: UseFormReturn<UserFormFields>;
@@ -100,7 +98,7 @@ const MultiLineInput = ({
     };
 
     const type = inputType.startsWith("html")
-        ? (inputType.substring("html".length + 2) as TextInputTypes)
+        ? (inputType.substring("html".length + 2))
         : "text";
 
     useEffect(() => {
@@ -108,48 +106,46 @@ const MultiLineInput = ({
     }, [register]);
 
     return (
-        <div id={id}>
+        <Box sx={{ width: '100%' }}>
             {fields.map((value, index) => (
-                <Fragment key={index}>
-                    <InputGroup>
-                        <InputGroupItem isFill>
-                            <TextInput
-                                data-testid={name + index}
-                                onChange={(_event, value) => updateValue(index, value)}
-                                name={`${name}.${index}.value`}
-                                value={value}
-                                isDisabled={isDisabled}
-                                type={type}
-                                {...rest}
-                            />
-                        </InputGroupItem>
-                        <InputGroupItem>
-                            <Button
-                                data-testid={"remove" + index}
-                                variant={ButtonVariant.link}
-                                onClick={() => remove(index)}
-                                tabIndex={-1}
-                                aria-label={t("remove")}
-                                isDisabled={fields.length === 1 || isDisabled}
-                            >
-                                <MinusCircleIcon />
-                            </Button>
-                        </InputGroupItem>
-                    </InputGroup>
-                    {index === fields.length - 1 && (
-                        <Button
-                            variant={ButtonVariant.link}
-                            onClick={append}
-                            tabIndex={-1}
-                            aria-label={t("add")}
-                            data-testid="addValue"
-                            isDisabled={!value || isDisabled}
-                        >
-                            <PlusCircleIcon /> {t(addButtonLabel || "add")}
-                        </Button>
-                    )}
-                </Fragment>
+                <Box key={index} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <TextField
+                        data-testid={name + index}
+                        onChange={(e) => updateValue(index, e.target.value)}
+                        name={`${name}.${index}.value`}
+                        value={value}
+                        disabled={isDisabled}
+                        type={type}
+                        variant="outlined"
+                        fullWidth
+                        size="medium"
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        data-testid={"remove" + index}
+                                        onClick={() => remove(index)}
+                                        disabled={fields.length === 1 || isDisabled}
+                                        size="small"
+                                    >
+                                        <RemoveIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                        {...rest}
+                    />
+                </Box>
             ))}
-        </div>
+            <Button
+                variant="outlined"
+                onClick={append}
+                startIcon={<AddIcon />}
+                disabled={!fields[fields.length - 1] || isDisabled}
+                sx={{ mt: 1 }}
+            >
+                {addButtonLabel || "Add"}
+            </Button>
+        </Box>
     );
 };

@@ -23,7 +23,19 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             alreadyHaveAccount: "Already have an account?",
             backToLoginLink: "Sign In",
             fullName: "Full Name",
-            confirmPassword: "Confirm Password"
+            confirmPassword: "Confirm Password",
+            invalidPassword: "Password does not meet requirements",
+            passwordMismatch: "Passwords do not match",
+            passwordRequirementsTitle: "New password must contain:",
+            passwordLength: "8 characters or more",
+            passwordCase: "Upper and lower case letters",
+            passwordNumber: "At least one number",
+            passwordSpecial: "At least one special character",
+            agreeToTerms: "I have read and agree to the",
+            termsAndConditions: "Terms and Conditions",
+            and: "and",
+            privacyPolicy: "Privacy Policy",
+            closeButton: "Close"
         },
         pt: {
             welcomeTitle: "Bem-vindo",
@@ -42,7 +54,19 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             alreadyHaveAccount: "Já tem uma conta?",
             backToLoginLink: "Entrar",
             fullName: "Nome Completo",
-            confirmPassword: "Confirmar Senha"
+            confirmPassword: "Confirmar Senha",
+            invalidPassword: "A senha não atende aos requisitos",
+            passwordMismatch: "As senhas não coincidem",
+            passwordRequirementsTitle: "A nova senha deve conter:",
+            passwordLength: "8 caracteres ou mais",
+            passwordCase: "Letras maiúsculas e minúsculas",
+            passwordNumber: "Pelo menos um número",
+            passwordSpecial: "Pelo menos um caractere especial",
+            agreeToTerms: "Eu li e concordo com os",
+            termsAndConditions: "Termos e Condições",
+            and: "e",
+            privacyPolicy: "Política de Privacidade",
+            closeButton: "Fechar"
         },
         es: {
             welcomeTitle: "Bienvenido",
@@ -61,7 +85,19 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             alreadyHaveAccount: "¿Ya tienes una cuenta?",
             backToLoginLink: "Iniciar Sesión",
             fullName: "Nombre Completo",
-            confirmPassword: "Confirmar Contraseña"
+            confirmPassword: "Confirmar Contraseña",
+            invalidPassword: "La contraseña no cumple con los requisitos",
+            passwordMismatch: "Las contraseñas no coinciden",
+            passwordRequirementsTitle: "La nueva contraseña debe contener:",
+            passwordLength: "8 caracteres o más",
+            passwordCase: "Letras mayúsculas y minúsculas",
+            passwordNumber: "Al menos un número",
+            passwordSpecial: "Al menos un carácter especial",
+            agreeToTerms: "He leído y acepto los",
+            termsAndConditions: "Términos y Condiciones",
+            and: "y",
+            privacyPolicy: "Política de Privacidad",
+            closeButton: "Cerrar"
         },
         fr: {
             welcomeTitle: "Bienvenue",
@@ -80,7 +116,19 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             alreadyHaveAccount: "Vous avez déjà un compte?",
             backToLoginLink: "Se connecter",
             fullName: "Nom Complet",
-            confirmPassword: "Confirmer le Mot de Passe"
+            confirmPassword: "Confirmer le Mot de Passe",
+            invalidPassword: "Le mot de passe ne répond pas aux exigences",
+            passwordMismatch: "Les mots de passe ne correspondent pas",
+            passwordRequirementsTitle: "Le nouveau mot de passe doit contenir:",
+            passwordLength: "8 caractères ou plus",
+            passwordCase: "Lettres majuscules et minuscules",
+            passwordNumber: "Au moins un nombre",
+            passwordSpecial: "Au moins un caractère spécial",
+            agreeToTerms: "J'ai lu et j'accepte les",
+            termsAndConditions: "Termes et Conditions",
+            and: "et",
+            privacyPolicy: "Politique de Confidentialité",
+            closeButton: "Fermer"
         },
         de: {
             welcomeTitle: "Willkommen",
@@ -99,7 +147,19 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             alreadyHaveAccount: "Haben Sie bereits ein Konto?",
             backToLoginLink: "Anmelden",
             fullName: "Vollständiger Name",
-            confirmPassword: "Passwort Bestätigen"
+            confirmPassword: "Passwort Bestätigen",
+            invalidPassword: "Das Passwort erfüllt nicht die Anforderungen",
+            passwordMismatch: "Die Passwörter stimmen nicht überein",
+            passwordRequirementsTitle: "Das neue Passwort muss enthalten:",
+            passwordLength: "8 Zeichen oder mehr",
+            passwordCase: "Groß- und Kleinbuchstaben",
+            passwordNumber: "Mindestens eine Zahl",
+            passwordSpecial: "Mindestens ein Sonderzeichen",
+            agreeToTerms: "Ich habe gelesen und stimme den",
+            termsAndConditions: "Allgemeinen Geschäftsbedingungen",
+            and: "und",
+            privacyPolicy: "Datenschutzrichtlinie zu",
+            closeButton: "Schließen"
         },
         ja: {
             welcomeTitle: "ようこそ",
@@ -118,7 +178,19 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             alreadyHaveAccount: "すでにアカウントをお持ちですか？",
             backToLoginLink: "ログイン",
             fullName: "フルネーム",
-            confirmPassword: "パスワード確認"
+            confirmPassword: "パスワード確認",
+            invalidPassword: "パスワードが要件を満たしていません",
+            passwordMismatch: "パスワードが一致しません",
+            passwordRequirementsTitle: "新しいパスワードには以下が必要です:",
+            passwordLength: "8文字以上",
+            passwordCase: "大文字と小文字",
+            passwordNumber: "少なくとも1つの数字",
+            passwordSpecial: "少なくとも1つの特殊文字",
+            agreeToTerms: "私は",
+            termsAndConditions: "利用規約",
+            and: "と",
+            privacyPolicy: "プライバシーポリシーに同意します",
+            closeButton: "閉じる"
         }
     })
     .build();

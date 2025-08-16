@@ -9,64 +9,93 @@
 
 // @ts-nocheck
 
-import { Checkbox, Radio } from "../../@patternfly/react-core";
+import {
+    FormControl,
+    FormLabel,
+    FormGroup,
+    FormControlLabel,
+    Checkbox,
+    RadioGroup,
+    Radio
+} from "@mui/material";
 import { Controller } from "react-hook-form";
 import { OptionLabel, Options, UserProfileFieldProps } from "./UserProfileFields";
 import { UserProfileGroup } from "./UserProfileGroup";
 import { fieldName, isRequiredAttribute, label } from "./utils";
 
 export const OptionComponent = (props: UserProfileFieldProps) => {
-    const { form, inputType, attribute } = props;
+    const { form, inputType, attribute, t } = props;
     const isRequired = isRequiredAttribute(attribute);
     const isMultiSelect = inputType.startsWith("multiselect");
-    const Component = isMultiSelect ? Checkbox : Radio;
     const options = (attribute.validators?.options as Options | undefined)?.options || [];
 
-    const optionLabel =
-        (attribute.annotations?.["inputOptionLabels"] as OptionLabel) || {};
+    const optionLabel = (attribute.annotations?.["inputOptionLabels"] as OptionLabel) || {};
     const prefix = attribute.annotations?.["inputOptionLabelsI18nPrefix"] as string;
+
+    const fieldPath = fieldName(attribute.name);
+    const fieldError = form.formState.errors[fieldPath];
+    const hasError = Boolean(fieldError);
+    const fieldDisplayName = label(t, attribute.displayName, attribute.name);
+
+    const fetchLabel = (option: string) =>
+        label(props.t, optionLabel[option], option, prefix);
 
     return (
         <UserProfileGroup {...props}>
             <Controller
-                name={fieldName(attribute.name)}
+                name={fieldPath}
                 control={form.control}
-                defaultValue=""
+                defaultValue={isMultiSelect ? [] : ""}
                 render={({ field }) => (
-                    <>
-                        {options.map(option => (
-                            <Component
-                                key={option}
-                                id={option}
-                                data-testid={option}
-                                label={label(
-                                    props.t,
-                                    optionLabel[option],
-                                    option,
-                                    prefix
-                                )}
-                                value={option}
-                                isChecked={field.value.includes(option)}
-                                onChange={() => {
-                                    if (isMultiSelect) {
-                                        if (field.value.includes(option)) {
-                                            field.onChange(
-                                                field.value.filter(
-                                                    (item: string) => item !== option
-                                                )
-                                            );
-                                        } else {
-                                            field.onChange([...field.value, option]);
+                    <FormControl
+                        component="fieldset"
+                        error={hasError}
+                        required={isRequired}
+                        disabled={attribute.readOnly}
+                    >
+                        <FormLabel component="legend">
+                            {fieldDisplayName}
+                        </FormLabel>
+
+                        {isMultiSelect ? (
+                            <FormGroup>
+                                {options.map(option => (
+                                    <FormControlLabel
+                                        key={option}
+                                        control={
+                                            <Checkbox
+                                                checked={Array.isArray(field.value) ? field.value.includes(option) : false}
+                                                onChange={(e) => {
+                                                    const currentValue = Array.isArray(field.value) ? field.value : [];
+                                                    if (e.target.checked) {
+                                                        field.onChange([...currentValue, option]);
+                                                    } else {
+                                                        field.onChange(currentValue.filter((item: string) => item !== option));
+                                                    }
+                                                }}
+                                                value={option}
+                                            />
                                         }
-                                    } else {
-                                        field.onChange([option]);
-                                    }
-                                }}
-                                readOnly={attribute.readOnly}
-                                isRequired={isRequired}
-                            />
-                        ))}
-                    </>
+                                        label={fetchLabel(option)}
+                                    />
+                                ))}
+                            </FormGroup>
+                        ) : (
+                            <RadioGroup
+                                value={field.value || ""}
+                                onChange={(e) => field.onChange(e.target.value)}
+                            >
+                                {options.map(option => (
+                                    <FormControlLabel
+                                        key={option}
+                                        value={option}
+                                        control={<Radio />}
+                                        label={fetchLabel(option)}
+                                    />
+                                ))}
+                            </RadioGroup>
+                        )}
+                    </FormControl>
                 )}
             />
         </UserProfileGroup>

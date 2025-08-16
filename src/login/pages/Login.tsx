@@ -276,7 +276,7 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
                                                     fontWeight: 500,
                                                     cursor: 'pointer',
                                                     position: 'relative',
-                                                    zIndex: 9999,
+                                                    zIndex: 1,
                                                     display: 'inline-block',
                                                     padding: '4px 8px',
                                                     // border: '1px solid blue' // Debug border for link

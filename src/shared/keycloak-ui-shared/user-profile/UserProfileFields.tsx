@@ -14,12 +14,12 @@ import {
     UserProfileAttributeMetadata,
     UserProfileMetadata
 } from "@keycloak/keycloak-admin-client/lib/defs/userProfileMetadata";
-import { Text } from "../../@patternfly/react-core";
 import { TFunction } from "i18next";
 import { ReactNode, useMemo, type JSX } from "react";
 import { FieldPath, UseFormReturn } from "react-hook-form";
+import { Box, Typography, Paper, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import { ScrollForm } from "../scroll-form/ScrollForm";
 import { LocaleSelector } from "./LocaleSelector";
 import { MultiInputComponent } from "./MultiInputComponent";
 import { OptionComponent } from "./OptionsComponent";
@@ -135,35 +135,72 @@ export const UserProfileFields = ({
         return null;
     }
 
+    // If there's only one group or ungrouped fields, render them directly
+    if (groupsWithAttributes.length === 1) {
+        const { group, attributes } = groupsWithAttributes[0];
+        return (
+            <Box sx={{ width: '100%' }}>
+                {group.displayDescription && (
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                        {label(t, group.displayDescription, "")}
+                    </Typography>
+                )}
+                {attributes.map(attribute => (
+                    <Box key={attribute.name} sx={{ mb: 2 }}>
+                        <FormField
+                            t={t}
+                            form={form}
+                            supportedLocales={supportedLocales}
+                            currentLocale={currentLocale}
+                            renderer={renderer}
+                            attribute={attribute}
+                        />
+                    </Box>
+                ))}
+            </Box>
+        );
+    }
+
+    // Multiple groups - use accordions
     return (
-        <ScrollForm
-            label={t("jumpToSection")}
-            sections={groupsWithAttributes
+        <Box sx={{ width: '100%' }}>
+            {groupsWithAttributes
                 .filter(group => group.attributes.length > 0)
-                .map(({ group, attributes }) => ({
-                    title: label(t, group.displayHeader, group.name) || t("general"),
-                    panel: (
-                        <div className="pf-v5-c-form">
-                            {group.displayDescription && (
-                                <Text className="pf-v5-u-pb-lg">
-                                    {label(t, group.displayDescription, "")}
-                                </Text>
-                            )}
-                            {attributes.map(attribute => (
-                                <FormField
-                                    key={attribute.name}
-                                    t={t}
-                                    form={form}
-                                    supportedLocales={supportedLocales}
-                                    currentLocale={currentLocale}
-                                    renderer={renderer}
-                                    attribute={attribute}
-                                />
-                            ))}
-                        </div>
-                    )
-                }))}
-        />
+                .map(({ group, attributes }, index) => (
+                    <Accordion key={group.name || 'default'} defaultExpanded={index === 0}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls={`panel${index}-content`}
+                            id={`panel${index}-header`}
+                        >
+                            <Typography variant="h6">
+                                {label(t, group.displayHeader, group.name) || t("general")}
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box sx={{ width: '100%' }}>
+                                {group.displayDescription && (
+                                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                                        {label(t, group.displayDescription, "")}
+                                    </Typography>
+                                )}
+                                {attributes.map(attribute => (
+                                    <Box key={attribute.name} sx={{ mb: 2 }}>
+                                        <FormField
+                                            t={t}
+                                            form={form}
+                                            supportedLocales={supportedLocales}
+                                            currentLocale={currentLocale}
+                                            renderer={renderer}
+                                            attribute={attribute}
+                                        />
+                                    </Box>
+                                ))}
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                ))}
+        </Box>
     );
 };
 
@@ -189,7 +226,7 @@ const FormField = ({
 
     const Component =
         attribute.multivalued ||
-        (isMultiValue(value) && attribute.annotations?.inputType === undefined)
+            (isMultiValue(value) && attribute.annotations?.inputType === undefined)
             ? FIELDS["multi-input"]
             : FIELDS[inputType];
 

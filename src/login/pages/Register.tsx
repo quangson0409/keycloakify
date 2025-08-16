@@ -2,8 +2,7 @@ import type { JSX } from "keycloakify/tools/JSX";
 import { useState, useLayoutEffect } from "react";
 import type { LazyOrNot } from "keycloakify/tools/LazyOrNot";
 import { kcSanitize } from "keycloakify/lib/kcSanitize";
-import { getKcClsx, type KcClsx } from "keycloakify/login/lib/kcClsx";
-import { clsx } from "keycloakify/tools/clsx";
+import { getKcClsx } from "keycloakify/login/lib/kcClsx";
 import type { UserProfileFormFieldsProps } from "keycloakify/login/UserProfileFormFieldsProps";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import type { KcContext } from "../KcContext";
@@ -19,64 +18,123 @@ import {
   Container,
   IconButton,
   InputAdornment,
-  Tooltip,
-  Alert
+  Alert,
 } from "@mui/material";
-import { Error, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, Check, Close } from "@mui/icons-material";
+import { LegalDialog, useLegalDialogs } from "../shared/LegalDialogs";
 
 type RegisterProps = PageProps<Extract<KcContext, { pageId: "register.ftl" }>, I18n> & {
   UserProfileFormFields: LazyOrNot<(props: UserProfileFormFieldsProps) => JSX.Element>;
   doMakeUserConfirmPassword: boolean;
 };
 
+// Password requirements checker
+function PasswordRequirements({ password, i18n }: { password: string; i18n: I18n }) {
+  const { msg } = i18n;
+
+  const requirements = [
+    {
+      text: msg("passwordLength"),
+      test: (pwd: string) => pwd.length >= 8,
+    },
+    {
+      text: msg("passwordCase"),
+      test: (pwd: string) => /[a-z]/.test(pwd) && /[A-Z]/.test(pwd),
+    },
+    {
+      text: msg("passwordNumber"),
+      test: (pwd: string) => /\d/.test(pwd),
+    },
+    {
+      text: msg("passwordSpecial"),
+      test: (pwd: string) => /[!@#$%^&*(),.?":{}|<>]/.test(pwd),
+    },
+  ];
+
+  return (
+    <Box sx={{ mt: 2, mb: 2 }}>
+      <Typography variant="body2" gutterBottom color="text.secondary">
+        {msg("passwordRequirementsTitle")}
+      </Typography>
+      {requirements.map((req, index) => (
+        <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+          {req.test(password) ? (
+            <Check sx={{ fontSize: 16, color: 'success.main', mr: 1 }} />
+          ) : (
+            <Close sx={{ fontSize: 16, color: 'text.disabled', mr: 1 }} />
+          )}
+          <Typography
+            variant="body2"
+            color={req.test(password) ? 'success.main' : 'text.disabled'}
+          >
+            {req.text}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
 function TermsAcceptance(props: {
   i18n: I18n;
-  kcClsx: KcClsx;
-  messagesPerField: Pick<KcContext["messagesPerField"], "existsError" | "get">;
+  messagesPerField: any;
   areTermsAccepted: boolean;
   onAreTermsAcceptedValueChange: (areTermsAccepted: boolean) => void;
+  onOpenTerms: () => void;
+  onOpenPrivacy: () => void;
 }) {
-  const { i18n, kcClsx, messagesPerField, areTermsAccepted, onAreTermsAcceptedValueChange } = props;
+  const { i18n, messagesPerField, areTermsAccepted, onAreTermsAcceptedValueChange, onOpenTerms, onOpenPrivacy } = props;
 
   const { msg } = i18n;
 
   return (
-    <>
-      <div className="form-group">
-        <div className={kcClsx("kcInputWrapperClass")}>
-          {msg("termsTitle")}
-          <div id="kc-registration-terms-text">{msg("termsText")}</div>
-        </div>
-      </div>
-      <div className="form-group">
-        <div className={kcClsx("kcLabelWrapperClass")}>
-          <input
-            type="checkbox"
+    <Box sx={{ mb: 3 }}>
+      <FormControlLabel
+        control={
+          <Checkbox
             id="termsAccepted"
             name="termsAccepted"
-            className={kcClsx("kcCheckboxInputClass")}
             checked={areTermsAccepted}
-            onChange={e => onAreTermsAcceptedValueChange(e.target.checked)}
-            aria-invalid={messagesPerField.existsError("termsAccepted")}
+            onChange={(e) => onAreTermsAcceptedValueChange(e.target.checked)}
           />
-          <label htmlFor="termsAccepted" className={kcClsx("kcLabelClass")}>
-            {msg("acceptTerms")}
-          </label>
-        </div>
-        {messagesPerField.existsError("termsAccepted") && (
-          <div className={kcClsx("kcLabelWrapperClass")}>
-            <span
-              id="input-error-terms-accepted"
-              className={kcClsx("kcInputErrorMessageClass")}
-              aria-live="polite"
-              dangerouslySetInnerHTML={{
-                __html: kcSanitize(messagesPerField.get("termsAccepted")),
+        }
+        label={
+          <Typography variant="body2">
+            {msg("agreeToTerms")}{" "}
+            <Link
+              component="button"
+              color="primary"
+              underline="hover"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenTerms();
               }}
-            />
-          </div>
-        )}
-      </div>
-    </>
+              sx={{ cursor: 'pointer' }}
+            >
+              {msg("termsAndConditions")}
+            </Link>{" "}
+            {msg("and")}{" "}
+            <Link
+              component="button"
+              color="primary"
+              underline="hover"
+              onClick={(e) => {
+                e.preventDefault();
+                onOpenPrivacy();
+              }}
+              sx={{ cursor: 'pointer' }}
+            >
+              {msg("privacyPolicy")}
+            </Link>
+          </Typography>
+        }
+      />
+      {messagesPerField.existsError("termsAccepted") && (
+        <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+          {messagesPerField.get("termsAccepted")}
+        </Typography>
+      )}
+    </Box>
   );
 }
 
@@ -99,25 +157,45 @@ export default function Register(props: RegisterProps) {
   const {
     messageHeader,
     url,
+    message,
     messagesPerField,
     recaptchaRequired,
     recaptchaVisible,
     recaptchaSiteKey,
     recaptchaAction,
-    termsAcceptanceRequired,
-    realm,
-    profile
+    termsAcceptanceRequired = true
   } = kcContext;
 
-  const { msg, msgStr, advancedMsg } = i18n;
+  const { msg, advancedMsg } = i18n;
 
   const [isFormSubmittable, setIsFormSubmittable] = useState(false);
   const [areTermsAccepted, setAreTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Use shared legal dialogs hook
+  const {
+    termsOpen,
+    privacyOpen,
+    handleOpenTerms,
+    handleCloseTerms,
+    handleOpenPrivacy,
+    handleClosePrivacy,
+  } = useLegalDialogs();
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+
+  // Password validation
+  const isPasswordValid = password.length >= 8 &&
+    /[a-z]/.test(password) &&
+    /[A-Z]/.test(password) &&
+    /\d/.test(password) &&
+    /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  const isConfirmPasswordValid = confirmPassword === password && password.length > 0;
 
   useLayoutEffect(() => {
     (window as any)["onSubmitRecaptcha"] = () => {
@@ -129,6 +207,7 @@ export default function Register(props: RegisterProps) {
       delete (window as any)["onSubmitRecaptcha"];
     };
   }, []);
+  console.log(messagesPerField.exists("global"), messagesPerField)
 
   return (
     <Template
@@ -140,7 +219,7 @@ export default function Register(props: RegisterProps) {
       displayMessage={messagesPerField.exists("global")}
       displayRequiredFields={false}
     >
-      <Container maxWidth="sm" sx={{
+      <Container maxWidth="lg" sx={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -150,7 +229,7 @@ export default function Register(props: RegisterProps) {
         <Box
           sx={{
             width: '100%',
-            maxWidth: 500,
+            maxWidth: 800,
             bgcolor: 'background.paper',
             borderRadius: 2,
             boxShadow: 3,
@@ -168,10 +247,10 @@ export default function Register(props: RegisterProps) {
             </Typography>
           </Box>
 
-          {messagesPerField.exists("global") && (
+          {message !== undefined && (
             <Alert severity="error" sx={{ mb: 3 }}>
               <div dangerouslySetInnerHTML={{
-                __html: kcSanitize(messagesPerField.get("global"))
+                __html: kcSanitize(message.summary)
               }} />
             </Alert>
           )}
@@ -190,13 +269,70 @@ export default function Register(props: RegisterProps) {
               doMakeUserConfirmPassword={doMakeUserConfirmPassword}
             />
 
+            {/* Password fields */}
+            <Box sx={{ mt: 3 }}>
+              <TextField
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                label={msg("password")}
+                fullWidth
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={password.length > 0 && !isPasswordValid}
+                helperText={password.length > 0 && !isPasswordValid ? msg("invalidPassword") : ""}
+                sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                name="password-confirm"
+                type={showConfirmPassword ? 'text' : 'password'}
+                label={msg("passwordConfirm")}
+                fullWidth
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={confirmPassword.length > 0 && !isConfirmPasswordValid}
+                helperText={confirmPassword.length > 0 && !isConfirmPasswordValid ? msg("passwordMismatch") : ""}
+                sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowConfirmPassword}
+                        edge="end"
+                      >
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Box>
+            <PasswordRequirements password={password} i18n={i18n} />
+            {/* Terms acceptance */}
+
             {termsAcceptanceRequired && (
               <TermsAcceptance
                 i18n={i18n}
-                kcClsx={kcClsx}
                 messagesPerField={messagesPerField}
                 areTermsAccepted={areTermsAccepted}
                 onAreTermsAcceptedValueChange={setAreTermsAccepted}
+                onOpenTerms={handleOpenTerms}
+                onOpenPrivacy={handleOpenPrivacy}
               />
             )}
 
@@ -221,8 +357,10 @@ export default function Register(props: RegisterProps) {
                 fullWidth
                 variant="contained"
                 size="large"
-                disabled={termsAcceptanceRequired && !areTermsAccepted}
-                sx={{ mb: 2 }}
+                disabled={termsAcceptanceRequired && !areTermsAccepted ||
+                  !isPasswordValid ||
+                  !isConfirmPasswordValid}
+                sx={{ mt: 2, mb: 2 }}
               >
                 {msg("createAccountButton")}
               </Button>
@@ -232,8 +370,11 @@ export default function Register(props: RegisterProps) {
                 fullWidth
                 variant="contained"
                 size="large"
-                disabled={!isFormSubmittable || (termsAcceptanceRequired && !areTermsAccepted)}
-                sx={{ mb: 2 }}
+                disabled={!isFormSubmittable ||
+                  (termsAcceptanceRequired && !areTermsAccepted) ||
+                  !isPasswordValid ||
+                  !isConfirmPasswordValid}
+                sx={{ mb: 2, mt: 2 }}
               >
                 {msg("createAccountButton")}
               </Button>
@@ -259,6 +400,20 @@ export default function Register(props: RegisterProps) {
           </form>
         </Box>
       </Container>
+
+      {/* Legal Dialogs */}
+      <LegalDialog
+        open={termsOpen}
+        onClose={handleCloseTerms}
+        i18n={i18n}
+        type="terms"
+      />
+      <LegalDialog
+        open={privacyOpen}
+        onClose={handleClosePrivacy}
+        i18n={i18n}
+        type="privacy"
+      />
     </Template>
   );
 }
