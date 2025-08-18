@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { clsx } from "keycloakify/tools/clsx";
-import { kcSanitize } from "keycloakify/lib/kcSanitize";
 import type { TemplateProps } from "keycloakify/login/TemplateProps";
 import { getKcClsx } from "keycloakify/login/lib/kcClsx";
 import { useSetClassName } from "keycloakify/tools/useSetClassName";
@@ -25,16 +24,9 @@ import {
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { LegalDialog, useLegalDialogs } from "./shared/LegalDialogs";
 import LanguageIcon from "@mui/icons-material/Language";
-import CloseIcon from "@mui/icons-material/Close";
 
 export default function Template(props: TemplateProps<KcContext, I18n>) {
     const {
-        displayInfo = false,
-        displayMessage = true,
-        displayRequiredFields = false,
-        headerNode,
-        socialProvidersNode = null,
-        infoNode = null,
         documentTitle,
         bodyClassName,
         kcContext,
@@ -48,7 +40,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
 
     const { msg, msgStr, currentLanguage, enabledLanguages } = i18n;
 
-    const { realm, auth, url, message, isAppInitiatedAction } = kcContext;
+    const { realm, url } = kcContext;
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -304,7 +296,6 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                                         <LanguageSelector
                                             currentLanguage={currentLanguage}
                                             enabledLanguages={enabledLanguages}
-                                            msgStr={msgStr}
                                         />
                                     )}
                                 </Box>
@@ -334,10 +325,9 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
     interface LanguageSelectorProps {
         currentLanguage: I18n["currentLanguage"];
         enabledLanguages: I18n["enabledLanguages"];
-        msgStr: I18n["msgStr"];
     }
 
-    function LanguageSelector({ currentLanguage, enabledLanguages, msgStr }: LanguageSelectorProps) {
+    function LanguageSelector({ currentLanguage, enabledLanguages }: LanguageSelectorProps) {
         const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
         const open = Boolean(anchorEl);
 
