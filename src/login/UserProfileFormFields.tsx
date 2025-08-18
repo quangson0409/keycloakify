@@ -291,7 +291,7 @@ function PasswordInputField(props: InputFieldByTypeProps & { fieldIndex: number 
         displayableErrors,
     } = props;
 
-    const { advancedMsg, advancedMsgStr, msgStr } = i18n;
+    const { advancedMsg, msgStr } = i18n;
 
     const { isPasswordRevealed, toggleIsPasswordRevealed } = useIsPasswordRevealed({
         passwordInputId: attribute.name,
@@ -321,11 +321,11 @@ function PasswordInputField(props: InputFieldByTypeProps & { fieldIndex: number 
                 })()}
                 error={hasError}
                 disabled={attribute.readOnly}
-                placeholder={
-                    attribute.annotations.inputTypePlaceholder === undefined
-                        ? undefined
-                        : advancedMsgStr(attribute.annotations.inputTypePlaceholder)
-                }
+                // placeholder={
+                //     attribute.annotations.inputTypePlaceholder === undefined
+                //         ? undefined
+                //         : advancedMsgStr(attribute.annotations.inputTypePlaceholder)
+                // }
                 helperText={
                     attribute.annotations.inputHelperTextBefore !== undefined
                         ? advancedMsg(attribute.annotations.inputHelperTextBefore)
@@ -439,7 +439,7 @@ function InputTag(props: InputFieldByTypeProps & { fieldIndex: number | undefine
         displayableErrors,
     } = props;
 
-    const { advancedMsg, advancedMsgStr } = i18n;
+    const { advancedMsg } = i18n;
 
     const hasError = displayableErrors.find(error => error.fieldIndex === fieldIndex) !== undefined;
 
@@ -454,6 +454,7 @@ function InputTag(props: InputFieldByTypeProps & { fieldIndex: number | undefine
     })();
 
     const isPasswordField = attribute.name === "password" || attribute.name === "password-confirm";
+    console.log('attribute.annotations.inputTypePlaceholder', attribute.annotations.inputTypePlaceholder)
 
     return (
         <>
@@ -477,11 +478,11 @@ function InputTag(props: InputFieldByTypeProps & { fieldIndex: number | undefine
                 })()}
                 error={hasError}
                 disabled={attribute.readOnly}
-                placeholder={
-                    attribute.annotations.inputTypePlaceholder === undefined
-                        ? undefined
-                        : advancedMsgStr(attribute.annotations.inputTypePlaceholder)
-                }
+                // placeholder={
+                //     attribute.annotations.inputTypePlaceholder === undefined
+                //         ? undefined
+                //         : (advancedMsgStr(attribute.annotations.inputTypePlaceholder) || attribute.annotations.inputTypePlaceholder)
+                // }
                 helperText={
                     attribute.annotations.inputHelperTextBefore !== undefined
                         ? advancedMsg(attribute.annotations.inputHelperTextBefore)

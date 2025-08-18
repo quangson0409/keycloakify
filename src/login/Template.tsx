@@ -25,6 +25,111 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { LegalDialog, useLegalDialogs } from "./shared/LegalDialogs";
 import LanguageIcon from "@mui/icons-material/Language";
 
+// Function to get appropriate flag for language
+const getLanguageFlag = (languageTag: string): string => {
+    const language = languageTag.toLowerCase();
+
+    // Custom mapping for specific languages
+    const languageFlagMap: Record<string, string> = {
+        // English variants
+        'en': 'GB',      // English -> Great Britain flag
+        'en-us': 'US',   // English US -> US flag
+        'en-gb': 'GB',   // English GB -> GB flag
+        'en-au': 'AU',   // English Australia -> Australia flag
+        'en-ca': 'CA',   // English Canada -> Canada flag
+
+        // Vietnamese
+        'vi': 'VN',      // Vietnamese -> Vietnam flag
+        'vi-vn': 'VN',   // Vietnamese Vietnam -> Vietnam flag
+
+        // Portuguese variants
+        'pt-br': 'BR',   // Portuguese Brazil -> Brazil flag
+        'pt': 'PT',      // Portuguese -> Portugal flag
+        'pt-pt': 'PT',   // Portuguese Portugal -> Portugal flag
+
+        // Spanish variants
+        'es': 'ES',      // Spanish -> Spain flag
+        'es-mx': 'MX',   // Spanish Mexico -> Mexico flag
+        'es-ar': 'AR',   // Spanish Argentina -> Argentina flag
+        'es-co': 'CO',   // Spanish Colombia -> Colombia flag
+
+        // French variants
+        'fr': 'FR',      // French -> France flag
+        'fr-ca': 'CA',   // French Canada -> Canada flag
+        'fr-be': 'BE',   // French Belgium -> Belgium flag
+
+        // Chinese variants
+        'zh': 'CN',      // Chinese -> China flag
+        'zh-cn': 'CN',   // Chinese Simplified -> China flag
+        'zh-tw': 'TW',   // Chinese Traditional -> Taiwan flag
+        'zh-hk': 'HK',   // Chinese Hong Kong -> Hong Kong flag
+
+        // Other popular languages
+        'ja': 'JP',      // Japanese -> Japan flag
+        'ko': 'KR',      // Korean -> South Korea flag
+        'ar': 'SA',      // Arabic -> Saudi Arabia flag
+        'hi': 'IN',      // Hindi -> India flag
+        'th': 'TH',      // Thai -> Thailand flag
+        'ms': 'MY',      // Malay -> Malaysia flag
+        'id': 'ID',      // Indonesian -> Indonesia flag
+        'tl': 'PH',      // Filipino -> Philippines flag
+        'sw': 'TZ',      // Swahili -> Tanzania flag
+        'he': 'IL',      // Hebrew -> Israel flag
+        'de': 'DE',      // German -> Germany flag
+        'it': 'IT',      // Italian -> Italy flag
+        'ru': 'RU',      // Russian -> Russia flag
+        'nl': 'NL',      // Dutch -> Netherlands flag
+    };
+
+    // Check for exact match first
+    if (languageFlagMap[language]) {
+        return languageFlagMap[language];
+    }
+
+    // Fallback to first part of language tag
+    const baseLang = language.split('-')[0];
+    if (languageFlagMap[baseLang]) {
+        return languageFlagMap[baseLang];
+    }
+
+    // Final fallback: use original country code (uppercase)
+    const fallback = languageTag.toUpperCase().split("-")[0];
+
+    // If it's a 2-letter code, use it; otherwise use 'UN' as universal fallback
+    return fallback.length === 2 ? fallback : 'UN';
+};
+
+// Function to handle image error with multiple fallbacks
+const handleFlagError = (e: React.SyntheticEvent<HTMLImageElement>, languageTag: string) => {
+    const target = e.target as HTMLImageElement;
+    const currentSrc = target.src;
+
+    // Try different fallback strategies
+    if (currentSrc.includes('/flat/')) {
+        // If flat style failed, try shiny style
+        const shinyUrl = currentSrc.replace('/flat/', '/shiny/');
+        target.src = shinyUrl;
+    } else if (!currentSrc.includes('UN/flat/')) {
+        // If country-specific flag failed, use UN flag
+        target.src = `https://flagsapi.com/UN/flat/16.png`;
+    } else {
+        // Final fallback: use a simple language icon
+        target.style.display = 'none';
+        // Log for debugging
+        console.warn(`Failed to load flag for language: ${languageTag}`);
+    }
+};
+
+// Reusable flag icon component
+const FlagIcon = ({ languageTag, label, size = 16 }: { languageTag: string; label: string; size?: number }) => (
+    <img
+        src={`https://flagsapi.com/${getLanguageFlag(languageTag)}/flat/${size}.png`}
+        alt={`${label} flag`}
+        style={{ width: size, height: size, marginRight: 8 }}
+        onError={(e) => handleFlagError(e, languageTag)}
+    />
+);
+
 export default function Template(props: TemplateProps<KcContext, I18n>) {
     const {
         documentTitle,
@@ -350,11 +455,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                     color="primary"
                     sx={{ display: "flex", alignItems: "center" }}
                 >
-                    <img
-                        src={`https://flagsapi.com/${currentLanguage.languageTag.toUpperCase().split("-")[0]}/flat/16.png`}
-                        alt={`${currentLanguage.label} flag`}
-                        style={{ width: 16, height: 16, marginRight: 8 }}
-                    />
+                    <FlagIcon languageTag={currentLanguage.languageTag} label={currentLanguage.label} />
                     {currentLanguage.label}
                     <LanguageIcon sx={{ fontSize: 16, ml: 0.5 }} />
                 </Button>
@@ -369,11 +470,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                 >
                     {enabledLanguages.map(({ languageTag, label, href }) => (
                         <MenuItem key={languageTag} onClick={handleClose} component="a" href={href}>
-                            <img
-                                src={`https://flagsapi.com/${languageTag.toUpperCase().split("-")[0]}/flat/16.png`}
-                                alt={`${label} flag`}
-                                style={{ width: 16, height: 16, marginRight: 8 }}
-                            />
+                            <FlagIcon languageTag={languageTag} label={label} />
                             {label}
                         </MenuItem>
                     ))}

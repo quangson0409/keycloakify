@@ -32,14 +32,14 @@ export const TextComponent = (props: UserProfileFieldProps) => {
     const isPasswordField = attribute.name === "password" || attribute.name === "password-confirm";
     const actualType = isPasswordField ? (showPassword ? "text" : "password") : type;
 
-    const placeholder = attribute.readOnly
-        ? ""
-        : label(
-            t,
-            attribute.annotations?.["inputTypePlaceholder"] as string,
-            "",
-            attribute.annotations?.["inputOptionLabelsI18nPrefix"] as string
-        );
+    // const placeholder = attribute.readOnly
+    //     ? ""
+    //     : label(
+    //         t,
+    //         attribute.annotations?.["inputTypePlaceholder"] as string,
+    //         "",
+    //         attribute.annotations?.["inputOptionLabelsI18nPrefix"] as string
+    //     );
 
     const fieldDisplayName = label(t, attribute.displayName, attribute.name);
     const helpText = attribute.annotations?.inputHelperTextBefore as string;
@@ -56,7 +56,7 @@ export const TextComponent = (props: UserProfileFieldProps) => {
                 name={fieldPath}
                 label={fieldDisplayName}
                 type={actualType}
-                placeholder={placeholder}
+                // placeholder={placeholder}
                 variant="outlined"
                 fullWidth
                 required={isRequired}

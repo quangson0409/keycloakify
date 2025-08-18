@@ -1,4 +1,3 @@
-import type { JSX } from "keycloakify/tools/JSX";
 import { useState, useLayoutEffect } from "react";
 import type { LazyOrNot } from "keycloakify/tools/LazyOrNot";
 import { kcSanitize } from "keycloakify/lib/kcSanitize";
@@ -24,7 +23,7 @@ import { Visibility, VisibilityOff, Check, Close } from "@mui/icons-material";
 import { LegalDialog, useLegalDialogs } from "../shared/LegalDialogs";
 
 type RegisterProps = PageProps<Extract<KcContext, { pageId: "register.ftl" }>, I18n> & {
-  UserProfileFormFields: LazyOrNot<(props: UserProfileFormFieldsProps) => JSX.Element>;
+  UserProfileFormFields: LazyOrNot<(props: UserProfileFormFieldsProps) => React.JSX.Element>;
   doMakeUserConfirmPassword: boolean;
 };
 
@@ -77,13 +76,13 @@ function PasswordRequirements({ password, i18n }: { password: string; i18n: I18n
 
 function TermsAcceptance(props: {
   i18n: I18n;
-  messagesPerField: any;
   areTermsAccepted: boolean;
   onAreTermsAcceptedValueChange: (areTermsAccepted: boolean) => void;
   onOpenTerms: () => void;
   onOpenPrivacy: () => void;
+  getFieldMessage: (fieldName: string) => string | null;
 }) {
-  const { i18n, messagesPerField, areTermsAccepted, onAreTermsAcceptedValueChange, onOpenTerms, onOpenPrivacy } = props;
+  const { i18n, areTermsAccepted, onAreTermsAcceptedValueChange, onOpenTerms, onOpenPrivacy, getFieldMessage } = props;
 
   const { msg } = i18n;
 
@@ -129,11 +128,14 @@ function TermsAcceptance(props: {
           </Typography>
         }
       />
-      {messagesPerField.existsError("termsAccepted") && (
-        <Typography variant="body2" color="error" sx={{ mt: 1 }}>
-          {messagesPerField.get("termsAccepted")}
-        </Typography>
-      )}
+      {(() => {
+        const termsError = getFieldMessage("termsAccepted");
+        return termsError ? (
+          <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+            {termsError}
+          </Typography>
+        ) : null;
+      })()}
     </Box>
   );
 }
@@ -168,12 +170,95 @@ export default function Register(props: RegisterProps) {
 
   const { msg, advancedMsg } = i18n;
 
+  // Helper function to safely get message
+  const getFieldMessage = (fieldName: string): string | null => {
+    try {
+      if (messagesPerField?.exists?.(fieldName)) {
+        const message = messagesPerField.get(fieldName);
+        return message && message.trim() ? message : null;
+      }
+      return null;
+    } catch (error) {
+      console.warn(`Error getting message for field ${fieldName}:`, error);
+      return null;
+    }
+  };
+
+  // Enhanced error message getter
+  const getErrorMessage = (): { content: string; severity: 'error' | 'warning' | 'info' } | null => {
+    try {
+      // Check for global field errors first
+      const globalMessage = getFieldMessage("global");
+      if (globalMessage) {
+        return { content: globalMessage, severity: 'error' };
+      }
+
+      // Check for general message
+      if (message) {
+        if (message.summary && message.summary.trim()) {
+          const severity = message.type === "error" ? "error" :
+            message.type === "warning" ? "warning" : "info";
+          return { content: message.summary, severity };
+        }
+
+        // Fallback to message type with default text
+        if (message.type === "error") {
+          return { content: "An error occurred during registration", severity: 'error' };
+        }
+      }
+
+      // Check for any field-specific errors
+      const commonFields = ['username', 'email', 'firstName', 'lastName', 'password', 'password-confirm', 'termsAccepted', 'phone'];
+      for (const field of commonFields) {
+        const fieldError = getFieldMessage(field);
+        if (fieldError) {
+          return { content: `${field}: ${fieldError}`, severity: 'error' };
+        }
+      }
+
+      // Check if there are any validation errors through existsError
+      try {
+        if (messagesPerField?.existsError) {
+          for (const field of commonFields) {
+            if (messagesPerField.existsError(field)) {
+              const errorMsg = messagesPerField.get(field);
+              if (errorMsg && errorMsg.trim()) {
+                return { content: `${field}: ${errorMsg}`, severity: 'error' };
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Error checking existsError:', e);
+      }
+
+      return null;
+    } catch (error) {
+      console.warn('Error getting error message:', error);
+      return { content: "An error occurred during registration", severity: 'error' };
+    }
+  };
+
   const [isFormSubmittable, setIsFormSubmittable] = useState(false);
   const [areTermsAccepted, setAreTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Debug logging for error messages
+  console.log('Debug - kcContext:', {
+    message: message,
+    messageType: message?.type,
+    messageSummary: message?.summary,
+    messagesPerField: messagesPerField,
+    globalExists: messagesPerField?.exists?.('global'),
+    globalMessage: messagesPerField?.get?.('global'),
+    usernameError: messagesPerField?.existsError?.('username'),
+    emailError: messagesPerField?.existsError?.('email'),
+    passwordError: messagesPerField?.existsError?.('password'),
+    errorMessageResult: getErrorMessage()
+  });
 
   // Use shared legal dialogs hook
   const {
@@ -207,7 +292,6 @@ export default function Register(props: RegisterProps) {
       delete (window as any)["onSubmitRecaptcha"];
     };
   }, []);
-  console.log(messagesPerField.exists("global"), messagesPerField)
 
   return (
     <Template
@@ -246,12 +330,55 @@ export default function Register(props: RegisterProps) {
               {msg("joinAudaksCloud")}
             </Typography>
           </Box>
+          {/* {displayMessage &&
+                        message !== undefined &&
+                        (message.type !== "warning" || !isAppInitiatedAction) && (
+                            <div
+                                className={clsx(
+                                    `alert-${message.type}`,
+                                    kcClsx("kcAlertClass"),
+                                    `pf-m-${message?.type === "error" ? "danger" : message.type}`,
+                                )}
+                            >
+                                <div className="pf-c-alert__icon">
+                                    {message.type === "success" && (
+                                        <span className={kcClsx("kcFeedbackSuccessIcon")}></span>
+                                    )}
+                                    {message.type === "warning" && (
+                                        <span className={kcClsx("kcFeedbackWarningIcon")}></span>
+                                    )}
+                                    {message.type === "error" && (
+                                        <span className={kcClsx("kcFeedbackErrorIcon")}></span>
+                                    )}
+                                    {message.type === "info" && (
+                                        <span className={kcClsx("kcFeedbackInfoIcon")}></span>
+                                    )}
+                                </div>
+                                <span
+                                    className={kcClsx("kcAlertTitleClass")}
+                                    dangerouslySetInnerHTML={{
+                                        __html: kcSanitize(message.summary),
+                                    }}
+                                />
+                            </div>
+                        )} */}
 
-          {message !== undefined && (
+          {/* Display error messages */}
+          {(() => {
+            const errorInfo = getErrorMessage();
+            return errorInfo ? (
+              <Alert severity={errorInfo.severity} sx={{ mb: 3 }}>
+                <div dangerouslySetInnerHTML={{
+                  __html: kcSanitize(errorInfo.content),
+                }} />
+              </Alert>
+            ) : null;
+          })()}
+
+          {/* Fallback: Display any uncaught errors */}
+          {message?.type === "error" && !getErrorMessage() && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              <div dangerouslySetInnerHTML={{
-                __html: kcSanitize(message.summary)
-              }} />
+              There was an error processing your registration. Please check your information and try again.
             </Alert>
           )}
 
@@ -328,11 +455,11 @@ export default function Register(props: RegisterProps) {
             {termsAcceptanceRequired && (
               <TermsAcceptance
                 i18n={i18n}
-                messagesPerField={messagesPerField}
                 areTermsAccepted={areTermsAccepted}
                 onAreTermsAcceptedValueChange={setAreTermsAccepted}
                 onOpenTerms={handleOpenTerms}
                 onOpenPrivacy={handleOpenPrivacy}
+                getFieldMessage={getFieldMessage}
               />
             )}
 
@@ -383,19 +510,38 @@ export default function Register(props: RegisterProps) {
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
                 {msg("alreadyHaveAccount")}{" "}
-                <Link
+                <a
                   href={url.loginUrl}
-                  variant="body2"
-                  underline="hover"
-                  sx={{
-                    color: 'primary.main',
+                  style={{
+                    color: '#1976d2',
+                    textDecoration: 'none',
                     fontWeight: 500,
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    position: 'relative',
+                    zIndex: 1,
+                    display: 'inline-block',
+                    padding: '4px 8px',
+                    // border: '1px solid blue' // Debug border for link
+                  }}
+                  onMouseOver={(e) => {
+                    const target = e.currentTarget as HTMLAnchorElement;
+                    target.style.textDecoration = 'underline';
+                    // target.style.backgroundColor = 'rgba(25, 118, 210, 0.1)';
+                  }}
+                  onMouseOut={(e) => {
+                    const target = e.currentTarget as HTMLAnchorElement;
+                    target.style.textDecoration = 'none';
+                    target.style.backgroundColor = 'transparent';
+                  }}
+                  onClick={() => {
+                    console.log('Register link clicked!', url.loginUrl);
+                    // Don't prevent default, let it navigate
                   }}
                 >
                   {msg("backToLoginLink")}
-                </Link>
+                </a>
               </Typography>
+
             </Box>
           </form>
         </Box>

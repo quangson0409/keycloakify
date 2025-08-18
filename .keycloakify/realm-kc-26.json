@@ -531,6 +531,35 @@
   "webAuthnPolicyPasswordlessExtraOrigins": [],
   "users": [
     {
+      "id": "44816940-75ab-4694-8c04-bf49d6e2d80d",
+      "username": "admin01",
+      "firstName": "son",
+      "lastName": "quang",
+      "email": "dev@x-or.pro",
+      "emailVerified": true,
+      "attributes": {
+        "favourite_pet": ["dog"],
+        "terms_and_conditions": ["1755538157"]
+      },
+      "createdTimestamp": 1755538156995,
+      "enabled": true,
+      "totp": false,
+      "credentials": [
+        {
+          "id": "375fc091-23de-48eb-af48-f23333591670",
+          "type": "password",
+          "createdDate": 1755538157061,
+          "secretData": "{\"value\":\"UPR3rr0hsL6QjxLUuzVa0mJfEHdfpYvlnCmxlMhngeE=\",\"salt\":\"yiAu30TaxphKB7lYWMluNw==\",\"additionalParameters\":{}}",
+          "credentialData": "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+        }
+      ],
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": ["default-roles-myrealm"],
+      "notBefore": 0,
+      "groups": []
+    },
+    {
       "id": "d93e1772-4916-4243-850f-a6d9b2615716",
       "username": "testuser",
       "firstName": "Test",
@@ -972,6 +1001,7 @@
           "consentRequired": false,
           "config": {
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "client_id",
@@ -987,6 +1017,7 @@
           "consentRequired": false,
           "config": {
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",
@@ -1002,6 +1033,7 @@
           "consentRequired": false,
           "config": {
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
             "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
@@ -1617,14 +1649,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-user-attribute-mapper",
-            "saml-role-list-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
-            "saml-user-property-mapper",
-            "oidc-usermodel-property-mapper",
+            "oidc-address-mapper",
             "oidc-usermodel-attribute-mapper",
             "oidc-full-name-mapper",
-            "oidc-address-mapper"
+            "oidc-sha256-pairwise-sub-mapper",
+            "saml-user-property-mapper",
+            "saml-role-list-mapper",
+            "oidc-usermodel-property-mapper",
+            "saml-user-attribute-mapper"
           ]
         }
       },
@@ -1655,13 +1687,13 @@
         "config": {
           "allowed-protocol-mapper-types": [
             "oidc-sha256-pairwise-sub-mapper",
-            "saml-user-attribute-mapper",
-            "saml-role-list-mapper",
             "oidc-usermodel-attribute-mapper",
+            "saml-role-list-mapper",
             "oidc-usermodel-property-mapper",
+            "saml-user-attribute-mapper",
+            "saml-user-property-mapper",
             "oidc-full-name-mapper",
-            "oidc-address-mapper",
-            "saml-user-property-mapper"
+            "oidc-address-mapper"
           ]
         }
       },
@@ -2435,7 +2467,8 @@
     "cibaExpiresIn": "120",
     "oauth2DeviceCodeLifespan": "600",
     "parRequestUriLifespan": "60",
-    "clientSessionMaxLifespan": "0"
+    "clientSessionMaxLifespan": "0",
+    "darkMode": "true"
   },
   "keycloakVersion": "26.3.2",
   "userManagedAccessAllowed": false,

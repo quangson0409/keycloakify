@@ -3,6 +3,7 @@ import { kcSanitize } from "keycloakify/lib/kcSanitize";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
+import { Container, Box, Typography } from "@mui/material";
 
 export default function LoginResetPassword(
   props: PageProps<Extract<KcContext, { pageId: "login-reset-password.ftl" }>, I18n>,
@@ -31,67 +32,91 @@ export default function LoginResetPassword(
       }
       headerNode={msg("emailForgotTitle")}
     >
-      <form
-        id="kc-reset-password-form"
-        className={kcClsx("kcFormClass")}
-        action={url.loginAction}
-        method="post"
-      >
-        <div className={kcClsx("kcFormGroupClass")}>
-          <div className={kcClsx("kcLabelWrapperClass")}>
-            <label htmlFor="username" className={kcClsx("kcLabelClass")}>
-              {!realm.loginWithEmailAllowed
-                ? msg("username")
-                : !realm.registrationEmailAsUsername
-                  ? msg("usernameOrEmail")
-                  : msg("email")}
-            </label>
-          </div>
-          <div className={kcClsx("kcInputWrapperClass")}>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              className={kcClsx("kcInputClass")}
-              autoFocus
-              defaultValue={auth.attemptedUsername ?? ""}
-              aria-invalid={messagesPerField.existsError("username")}
-            />
-            {messagesPerField.existsError("username") && (
-              <span
-                id="input-error-username"
-                className={kcClsx("kcInputErrorMessageClass")}
-                aria-live="polite"
-                dangerouslySetInnerHTML={{
-                  __html: kcSanitize(messagesPerField.get("username")),
-                }}
-              />
-            )}
-          </div>
-        </div>
-        <div className={kcClsx("kcFormGroupClass", "kcFormSettingClass")}>
-          <div id="kc-form-options" className={kcClsx("kcFormOptionsClass")}>
-            <div className={kcClsx("kcFormOptionsWrapperClass")}>
-              <span>
-                <a href={url.loginUrl}>{msg("backToLogin")}</a>
-              </span>
+      <Container maxWidth="sm" sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: 4,
+        minHeight: 'inherit'
+      }}>
+        <Box
+          sx={{
+            width: '100%',
+            // maxWidth: 800,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            boxShadow: 3,
+            p: 4,
+            mx: 'auto',
+            my: 2
+          }}
+        >
+          <Typography textAlign="center" variant="h5" component="h1" gutterBottom>
+            {msg("emailForgotTitle")}
+          </Typography>
+          <form
+            id="kc-reset-password-form"
+            className={kcClsx("kcFormClass")}
+            action={url.loginAction}
+            method="post"
+          >
+            <div className={kcClsx("kcFormGroupClass")}>
+              <div className={kcClsx("kcLabelWrapperClass")}>
+                <label htmlFor="username" className={kcClsx("kcLabelClass")}>
+                  {!realm.loginWithEmailAllowed
+                    ? msg("username")
+                    : !realm.registrationEmailAsUsername
+                      ? msg("usernameOrEmail")
+                      : msg("email")}
+                </label>
+              </div>
+              <div className={kcClsx("kcInputWrapperClass")}>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  className={kcClsx("kcInputClass")}
+                  autoFocus
+                  defaultValue={auth.attemptedUsername ?? ""}
+                  aria-invalid={messagesPerField.existsError("username")}
+                />
+                {messagesPerField.existsError("username") && (
+                  <span
+                    id="input-error-username"
+                    className={kcClsx("kcInputErrorMessageClass")}
+                    aria-live="polite"
+                    dangerouslySetInnerHTML={{
+                      __html: kcSanitize(messagesPerField.get("username")),
+                    }}
+                  />
+                )}
+              </div>
             </div>
-          </div>
+            <div className={kcClsx("kcFormGroupClass", "kcFormSettingClass")}>
+              <div id="kc-form-options" className={kcClsx("kcFormOptionsClass")}>
+                <div className={kcClsx("kcFormOptionsWrapperClass")}>
+                  <span>
+                    <a href={url.loginUrl}>{msg("backToLogin")}</a>
+                  </span>
+                </div>
+              </div>
 
-          <div id="kc-form-buttons" className={kcClsx("kcFormButtonsClass")}>
-            <input
-              className={kcClsx(
-                "kcButtonClass",
-                "kcButtonPrimaryClass",
-                "kcButtonBlockClass",
-                "kcButtonLargeClass",
-              )}
-              type="submit"
-              value={msgStr("doSubmit")}
-            />
-          </div>
-        </div>
-      </form>
+              <div id="kc-form-buttons" className={kcClsx("kcFormButtonsClass")}>
+                <input
+                  className={kcClsx(
+                    "kcButtonClass",
+                    "kcButtonPrimaryClass",
+                    "kcButtonBlockClass",
+                    "kcButtonLargeClass",
+                  )}
+                  type="submit"
+                  value={msgStr("doSubmit")}
+                />
+              </div>
+            </div>
+          </form>
+        </Box>
+      </Container>
     </Template>
   );
 }

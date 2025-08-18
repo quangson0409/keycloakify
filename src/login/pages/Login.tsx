@@ -11,7 +11,6 @@ import {
     Typography,
     FormControlLabel,
     Checkbox,
-    Link,
     Box,
     Container,
     IconButton,
@@ -227,19 +226,49 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
                                     )}
 
                                     {realm.resetPasswordAllowed && (
-                                        <Link
+                                        // <Link
+                                        //     href={url.loginResetCredentialsUrl}
+                                        //     variant="body2"
+                                        //     underline="hover"
+                                        //     onClick={(e) => {
+                                        //         e.preventDefault();
+                                        //         window.location.href = url.loginResetCredentialsUrl;
+                                        //         // Handle forgot password click
+                                        //     }}
+                                        //     sx={{ ml: 'auto' }}
+                                        // >
+                                        //     {msg("doForgotPassword")}
+                                        // </Link>
+                                        <a
                                             href={url.loginResetCredentialsUrl}
-                                            variant="body2"
-                                            underline="hover"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                window.location.href = url.loginResetCredentialsUrl;
-                                                // Handle forgot password click
+                                            style={{
+                                                color: '#1976d2',
+                                                textDecoration: 'none',
+                                                fontWeight: 500,
+                                                cursor: 'pointer',
+                                                position: 'relative',
+                                                zIndex: 1,
+                                                display: 'inline-block',
+                                                padding: '4px 8px',
+                                                // border: '1px solid blue' // Debug border for link
                                             }}
-                                            sx={{ ml: 'auto' }}
+                                            onMouseOver={(e) => {
+                                                const target = e.currentTarget as HTMLAnchorElement;
+                                                target.style.textDecoration = 'underline';
+                                                // target.style.backgroundColor = 'rgba(25, 118, 210, 0.1)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                                const target = e.currentTarget as HTMLAnchorElement;
+                                                target.style.textDecoration = 'none';
+                                                target.style.backgroundColor = 'transparent';
+                                            }}
+                                            onClick={() => {
+                                                console.log('Login Credential link clicked!', url.loginResetCredentialsUrl);
+                                                // Don't prevent default, let it navigate
+                                            }}
                                         >
                                             {msg("doForgotPassword")}
-                                        </Link>
+                                        </a>
                                     )}
                                 </Box>
 
