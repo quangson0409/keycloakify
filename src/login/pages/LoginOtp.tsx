@@ -31,7 +31,7 @@ export default function LoginOtp(
       displayMessage={!messagesPerField.existsError("totp")}
       headerNode={msg("doLogIn")}
     >
-      <Container maxWidth="lg" sx={{
+      <Container maxWidth="sm" sx={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

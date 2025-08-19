@@ -87,6 +87,19 @@ export const WithFavoritePet: Story = {
       kcContext={{
         profile: {
           attributesByName: {
+            phone: {
+              name: "phone",
+              displayName: "${profile.attributes.phone}",
+              validators: {
+                pattern: {
+                  pattern: "^[0-9]{10}$",
+                  "error-message": "${profile.attributes.phone.pattern.error}",
+                },
+              },
+              annotations: {
+                inputHelperTextBefore: "${profile.attributes.phone.inputHelperTextBefore}",
+              },
+            },
             favoritePet: {
               name: "favorite-pet",
               displayName: "${profile.attributes.favoritePet}",

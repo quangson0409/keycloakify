@@ -20,7 +20,7 @@ export default function LoginPageExpired(
       classes={classes}
       headerNode={msg("pageExpiredTitle")}
     >
-      <Container maxWidth="lg" sx={{
+      <Container maxWidth="sm" sx={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

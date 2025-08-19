@@ -1,6 +1,5 @@
-import { useEffect, Fragment } from "react";
+import { useEffect, Fragment, useState } from "react";
 import { assert } from "keycloakify/tools/assert";
-import { useIsPasswordRevealed } from "keycloakify/tools/useIsPasswordRevealed";
 import type { KcClsx } from "keycloakify/login/lib/kcClsx";
 import {
     TextField,
@@ -16,12 +15,8 @@ import {
     MenuItem,
     InputLabel,
     Box,
-    Typography,
-    IconButton,
-    InputAdornment,
     Button,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
     useUserProfileForm,
     getButtonToDisplayForMultivaluedAttributeField,
@@ -32,6 +27,19 @@ import type { UserProfileFormFieldsProps } from "keycloakify/login/UserProfileFo
 import type { Attribute } from "keycloakify/login/KcContext";
 import type { KcContext } from "./KcContext";
 import type { I18n } from "./i18n";
+
+// Country codes data
+const countryCodes = [
+    { code: '+1', country: 'US', flag: 'US', name: 'United States' },
+    { code: '+55', country: 'BR', flag: 'BR', name: 'Brazil' },
+    { code: '+84', country: 'VN', flag: 'VN', name: 'Vietnam' },
+    { code: '+86', country: 'CN', flag: 'CN', name: 'China' },
+    { code: '+81', country: 'JP', flag: 'JP', name: 'Japan' },
+    { code: '+82', country: 'KR', flag: 'KR', name: 'South Korea' },
+    { code: '+44', country: 'GB', flag: 'GB', name: 'United Kingdom' },
+    { code: '+33', country: 'FR', flag: 'FR', name: 'France' },
+    { code: '+49', country: 'DE', flag: 'DE', name: 'Germany' },
+];
 
 export default function UserProfileFormFields(props: UserProfileFormFieldsProps<KcContext, I18n>) {
     const {
@@ -53,23 +61,28 @@ export default function UserProfileFormFields(props: UserProfileFormFieldsProps<
         doMakeUserConfirmPassword,
     });
 
+    // Debug logs để kiểm tra form field states
+    console.log('UserProfileFormFields - formFieldStates:', formFieldStates);
+    console.log('UserProfileFormFields - isFormSubmittable:', isFormSubmittable);
+
     useEffect(() => {
+        console.log('UserProfileFormFields - isFormSubmittable changed:', isFormSubmittable);
         onIsFormSubmittableValueChange(isFormSubmittable);
     }, [isFormSubmittable]);
-
-    const groupNameRef = { current: "" };
 
     return (
         <>
             {formFieldStates.map(({ attribute, displayableErrors, valueOrValues }) => {
+                console.log('Rendering field:', attribute.name, 'with display name:', attribute.displayName, 'type:', attribute.annotations?.inputType);
+
+                // Bỏ qua password và password-confirm fields vì đã xử lý trong Register.tsx
+                if (attribute.name === "password" || attribute.name === "password-confirm" || attribute.name === "priority" || attribute.name === "domain" || attribute.name === "credit") {
+                    console.log('Skipping password field:', attribute.name);
+                    return null;
+                }
+
                 return (
                     <Fragment key={attribute.name}>
-                        <GroupLabel
-                            attribute={attribute}
-                            groupNameRef={groupNameRef}
-                            i18n={i18n}
-                            kcClsx={kcClsx}
-                        />
                         {BeforeField !== undefined && (
                             <BeforeField
                                 attribute={attribute}
@@ -84,7 +97,8 @@ export default function UserProfileFormFields(props: UserProfileFormFieldsProps<
                             sx={{
                                 display:
                                     attribute.annotations.inputType === "hidden" ||
-                                        (attribute.name === "password-confirm" && !doMakeUserConfirmPassword)
+                                        (attribute.name === "password-confirm" && !doMakeUserConfirmPassword) ||
+                                        attribute.name === "locale" // Ẩn locale field
                                         ? "none"
                                         : "block",
                                 mb: 2,
@@ -120,78 +134,6 @@ export default function UserProfileFormFields(props: UserProfileFormFieldsProps<
             })}
         </>
     );
-}
-
-function GroupLabel(props: {
-    attribute: Attribute;
-    groupNameRef: {
-        current: string;
-    };
-    i18n: I18n;
-    kcClsx: KcClsx;
-}) {
-    const { attribute, groupNameRef, i18n } = props;
-
-    const { advancedMsg } = i18n;
-
-    if (attribute.group?.name !== groupNameRef.current) {
-        groupNameRef.current = attribute.group?.name ?? "";
-
-        if (groupNameRef.current !== "") {
-            assert(attribute.group !== undefined);
-
-            return (
-                <Box
-                    sx={{ mb: 3 }}
-                    {...Object.fromEntries(
-                        Object.entries(attribute.group.html5DataAnnotations).map(([key, value]) => [
-                            `data-${key}`,
-                            value,
-                        ]),
-                    )}
-                >
-                    {(() => {
-                        const groupDisplayHeader = attribute.group.displayHeader ?? "";
-                        const groupHeaderText =
-                            groupDisplayHeader !== "" ? advancedMsg(groupDisplayHeader) : attribute.group.name;
-
-                        return (
-                            <Typography
-                                variant="h6"
-                                component="h3"
-                                id={`header-${attribute.group.name}`}
-                                sx={{ fontWeight: 600, mb: 1 }}
-                            >
-                                {groupHeaderText}
-                            </Typography>
-                        );
-                    })()}
-                    {(() => {
-                        const groupDisplayDescription = attribute.group.displayDescription ?? "";
-
-                        if (groupDisplayDescription !== "") {
-                            const groupDescriptionText = advancedMsg(groupDisplayDescription);
-
-                            return (
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    id={`description-${attribute.group.name}`}
-                                    sx={{ mb: 2 }}
-                                >
-                                    {groupDescriptionText}
-                                </Typography>
-                            );
-                        }
-
-                        return null;
-                    })()}
-                </Box>
-            );
-        }
-    }
-
-    return null;
 }
 
 function FieldErrors(props: {
@@ -264,169 +206,9 @@ function InputFieldByType(props: InputFieldByTypeProps) {
                 );
             }
 
-            const inputNode = <InputTag {...props} fieldIndex={undefined} />;
-
-            if (attribute.name === "password" || attribute.name === "password-confirm") {
-                // For password fields, we need to modify the InputTag to include the password toggle
-                return (
-                    <PasswordInputField
-                        {...props}
-                        fieldIndex={undefined}
-                    />
-                );
-            }
-
-            return inputNode;
+            return <InputTag {...props} fieldIndex={undefined} />;
         }
     }
-}
-
-function PasswordInputField(props: InputFieldByTypeProps & { fieldIndex: number | undefined }) {
-    const {
-        attribute,
-        fieldIndex,
-        dispatchFormAction,
-        valueOrValues,
-        i18n,
-        displayableErrors,
-    } = props;
-
-    const { advancedMsg, msgStr } = i18n;
-
-    const { isPasswordRevealed, toggleIsPasswordRevealed } = useIsPasswordRevealed({
-        passwordInputId: attribute.name,
-    });
-
-    const hasError = displayableErrors.find(error => error.fieldIndex === fieldIndex) !== undefined;
-
-    return (
-        <>
-            <TextField
-                id={attribute.name}
-                name={attribute.name}
-                type={isPasswordRevealed ? "text" : "password"}
-                label={advancedMsg(attribute.displayName ?? "")}
-                required={attribute.required}
-                fullWidth
-                variant="outlined"
-                size="medium"
-                value={(() => {
-                    if (fieldIndex !== undefined) {
-                        assert(valueOrValues instanceof Array);
-                        return valueOrValues[fieldIndex];
-                    }
-
-                    assert(typeof valueOrValues === "string");
-                    return valueOrValues;
-                })()}
-                error={hasError}
-                disabled={attribute.readOnly}
-                // placeholder={
-                //     attribute.annotations.inputTypePlaceholder === undefined
-                //         ? undefined
-                //         : advancedMsgStr(attribute.annotations.inputTypePlaceholder)
-                // }
-                helperText={
-                    attribute.annotations.inputHelperTextBefore !== undefined
-                        ? advancedMsg(attribute.annotations.inputHelperTextBefore)
-                        : attribute.annotations.inputHelperTextAfter !== undefined
-                            ? advancedMsg(attribute.annotations.inputHelperTextAfter)
-                            : undefined
-                }
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label={msgStr(isPasswordRevealed ? "hidePassword" : "showPassword")}
-                                onClick={toggleIsPasswordRevealed}
-                                edge="end"
-                                size="small"
-                            >
-                                {isPasswordRevealed ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                    ),
-                }}
-                inputProps={{
-                    autoComplete: attribute.autocomplete,
-                    pattern: attribute.annotations.inputTypePattern,
-                    maxLength:
-                        attribute.annotations.inputTypeMaxlength === undefined
-                            ? undefined
-                            : parseInt(`${attribute.annotations.inputTypeMaxlength}`),
-                    minLength:
-                        attribute.annotations.inputTypeMinlength === undefined
-                            ? undefined
-                            : parseInt(`${attribute.annotations.inputTypeMinlength}`),
-                    max: attribute.annotations.inputTypeMax,
-                    min: attribute.annotations.inputTypeMin,
-                    step: attribute.annotations.inputTypeStep,
-                    ...Object.fromEntries(
-                        Object.entries(attribute.html5DataAnnotations ?? {}).map(([key, value]) => [
-                            `data-${key}`,
-                            value,
-                        ]),
-                    ),
-                }}
-                onChange={event =>
-                    dispatchFormAction({
-                        action: "update",
-                        name: attribute.name,
-                        valueOrValues: (() => {
-                            if (fieldIndex !== undefined) {
-                                assert(valueOrValues instanceof Array);
-
-                                return valueOrValues.map((value, i) => {
-                                    if (i === fieldIndex) {
-                                        return event.target.value;
-                                    }
-
-                                    return value;
-                                });
-                            }
-
-                            return event.target.value;
-                        })(),
-                    })
-                }
-                onBlur={() =>
-                    dispatchFormAction({
-                        action: "focus lost",
-                        name: attribute.name,
-                        fieldIndex: fieldIndex,
-                    })
-                }
-                sx={{ mb: 1 }}
-            />
-            {(() => {
-                if (fieldIndex === undefined) {
-                    return null;
-                }
-
-                assert(valueOrValues instanceof Array);
-
-                const values = valueOrValues;
-
-                return (
-                    <>
-                        <FieldErrors
-                            attribute={attribute}
-                            kcClsx={props.kcClsx}
-                            displayableErrors={displayableErrors}
-                            fieldIndex={fieldIndex}
-                        />
-                        <AddRemoveButtonsMultiValuedAttribute
-                            attribute={attribute}
-                            values={values}
-                            fieldIndex={fieldIndex}
-                            dispatchFormAction={dispatchFormAction}
-                            i18n={i18n}
-                        />
-                    </>
-                );
-            })()}
-        </>
-    );
 }
 
 function InputTag(props: InputFieldByTypeProps & { fieldIndex: number | undefined }) {
@@ -456,6 +238,151 @@ function InputTag(props: InputFieldByTypeProps & { fieldIndex: number | undefine
     const isPasswordField = attribute.name === "password" || attribute.name === "password-confirm";
     console.log('attribute.annotations.inputTypePlaceholder', attribute.annotations.inputTypePlaceholder)
 
+    // Xử lý đặc biệt cho field phone
+    if (attribute.name === "phone") {
+        console.log('Rendering phone field with attribute:', attribute);
+
+        const [selectedCountry, setSelectedCountry] = useState('+55'); // Default to Brazil
+
+        return (
+            <>
+                <Box sx={{ mb: 1 }}>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        {/* Country Code Selector */}
+                        <Box sx={{ width: '30%' }}>
+                            <FormControl fullWidth variant="outlined" size="medium">
+                                <Select
+                                    value={selectedCountry}
+                                    onChange={(e) => setSelectedCountry(e.target.value)}
+                                    disabled
+                                    displayEmpty
+                                    sx={{
+                                        '& .MuiSelect-select': {
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1
+                                        }
+                                    }}
+                                >
+                                    {countryCodes.map((country) => (
+                                        <MenuItem key={country.code} value={country.code}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <span><img src={`https://flagsapi.com/${country.flag}/flat/24.png`} alt={country.code} /></span>
+                                                <span>{country.code}</span>
+                                            </Box>
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
+
+                        {/* Phone Number Input */}
+                        <Box sx={{ width: '70%' }}>
+                            <TextField
+                                id={attribute.name}
+                                name={attribute.name}
+                                type="tel"
+                                label={advancedMsg(attribute.displayName ?? "Phone Number")}
+                                required={false}
+                                fullWidth
+                                variant="outlined"
+                                size="medium"
+                                value={(() => {
+                                    if (fieldIndex !== undefined) {
+                                        assert(valueOrValues instanceof Array);
+                                        return valueOrValues[fieldIndex] ?? "";
+                                    }
+
+                                    assert(typeof valueOrValues === "string");
+                                    return valueOrValues;
+                                })()}
+                                error={hasError}
+                                disabled={attribute.readOnly}
+                                helperText={
+                                    attribute.annotations.inputHelperTextBefore !== undefined
+                                        ? advancedMsg(attribute.annotations.inputHelperTextBefore)
+                                        : attribute.annotations.inputHelperTextAfter !== undefined
+                                            ? advancedMsg(attribute.annotations.inputHelperTextAfter)
+                                            : undefined
+                                }
+                                inputProps={{
+                                    autoComplete: attribute.autocomplete,
+                                    pattern: attribute.annotations.inputTypePattern,
+                                    maxLength:
+                                        attribute.annotations.inputTypeMaxlength === undefined
+                                            ? undefined
+                                            : parseInt(`${attribute.annotations.inputTypeMaxlength}`),
+                                    minLength:
+                                        attribute.annotations.inputTypeMinlength === undefined
+                                            ? undefined
+                                            : parseInt(`${attribute.annotations.inputTypeMinlength}`),
+                                    max: attribute.annotations.inputTypeMax,
+                                    min: attribute.annotations.inputTypeMin,
+                                    step: attribute.annotations.inputTypeStep,
+                                    ...Object.fromEntries(
+                                        Object.entries(attribute.html5DataAnnotations ?? {}).map(([key, value]) => [
+                                            `data-${key}`,
+                                            value,
+                                        ]),
+                                    ),
+                                }}
+                                onChange={event => {
+                                    // Just store the phone number without country code for now
+                                    dispatchFormAction({
+                                        action: "update",
+                                        name: attribute.name,
+                                        valueOrValues: (() => {
+                                            if (fieldIndex !== undefined) {
+                                                assert(valueOrValues instanceof Array);
+                                                return valueOrValues.map((value, i) => (i === fieldIndex ? event.target.value : value));
+                                            }
+
+                                            return event.target.value;
+                                        })(),
+                                    });
+                                }}
+                                onBlur={() =>
+                                    dispatchFormAction({
+                                        action: "focus lost",
+                                        name: attribute.name,
+                                        fieldIndex: fieldIndex,
+                                    })
+                                }
+                            />
+                        </Box>
+                    </Box>
+                </Box>
+                {(() => {
+                    if (fieldIndex === undefined) {
+                        return null;
+                    }
+
+                    assert(valueOrValues instanceof Array);
+
+                    const values = valueOrValues;
+
+                    return (
+                        <>
+                            <FieldErrors
+                                attribute={attribute}
+                                kcClsx={props.kcClsx}
+                                displayableErrors={displayableErrors}
+                                fieldIndex={fieldIndex}
+                            />
+                            <AddRemoveButtonsMultiValuedAttribute
+                                attribute={attribute}
+                                values={values}
+                                fieldIndex={fieldIndex}
+                                dispatchFormAction={dispatchFormAction}
+                                i18n={i18n}
+                            />
+                        </>
+                    );
+                })()}
+            </>
+        );
+    }
+
     return (
         <>
             <TextField
@@ -463,7 +390,7 @@ function InputTag(props: InputFieldByTypeProps & { fieldIndex: number | undefine
                 name={attribute.name}
                 type={isPasswordField ? "password" : inputType}
                 label={advancedMsg(attribute.displayName ?? "")}
-                required={attribute.required}
+                required={attribute.name === "CPF" || attribute.name === "phone" ? false : attribute.required}
                 fullWidth
                 variant="outlined"
                 size="medium"
@@ -478,11 +405,11 @@ function InputTag(props: InputFieldByTypeProps & { fieldIndex: number | undefine
                 })()}
                 error={hasError}
                 disabled={attribute.readOnly}
-                // placeholder={
-                //     attribute.annotations.inputTypePlaceholder === undefined
-                //         ? undefined
-                //         : (advancedMsgStr(attribute.annotations.inputTypePlaceholder) || attribute.annotations.inputTypePlaceholder)
-                // }
+                placeholder={
+                    attribute.name === "phone" ? "Số điện thoại" :
+                        attribute.name === "CPF" ? "CPF (không bắt buộc)" :
+                            undefined
+                }
                 helperText={
                     attribute.annotations.inputHelperTextBefore !== undefined
                         ? advancedMsg(attribute.annotations.inputHelperTextBefore)

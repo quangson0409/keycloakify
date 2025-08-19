@@ -14,11 +14,11 @@ const LoginResetPassword = lazy(() => import("./pages/LoginResetPassword"));
 const LoginVerifyEmail = lazy(() => import("./pages/LoginVerifyEmail"));
 const LogoutConfirm = lazy(() => import("./pages/LogoutConfirm"));
 const Register = lazy(() => import("./pages/Register"));
-// const UserProfileFormFields = lazy(
+const LoginUpdatePassword = lazy(() => import("./pages/LoginUpdatePassword"));// const UserProfileFormFields = lazy(
 //     () => import("./UserProfileFormFields")
 // );
 const UserProfileFormFields = lazy(
-    () => import("./UserProfileFormFieldsbak")
+    () => import("./UserProfileFormFields")
 );
 
 const doMakeUserConfirmPassword = true;
@@ -94,6 +94,13 @@ function KcPageContextualized(props: { kcContext: KcContext }) {
                                     doUseDefaultCss={true}
                                 />
                             );
+                        case "login-update-password.ftl": return (
+                            <LoginUpdatePassword
+                                {...{ kcContext, i18n, classes }}
+                                Template={Template}
+                                doUseDefaultCss={true}
+                            />
+                        );
                         case "login-verify-email.ftl":
                             return (
                                 <LoginVerifyEmail

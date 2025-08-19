@@ -202,7 +202,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                     gap: 3
                 }}>
                     <img
-                        src={`${url.resourcesPath}/img/audaks-public.png`}
+                        src={`${url.resourcesPath}/img/logo-light.svg`}
                         alt="Audaks Cloud"
                         style={{
                             width: "120px",
@@ -275,7 +275,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                 >
                     <Toolbar sx={{ justifyContent: "center" }}>
                         <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-                            <img src={`${url.resourcesPath}/img/audaks-public.png`} alt="Audaks Cloud" style={{ width: "110px", height: "100px" }} />
+                            <img src={`${url.resourcesPath}/img/logo-light.svg`} alt="Audaks Cloud" style={{ width: "110px", height: "100px" }} />
                         </Box>
                     </Toolbar>
                 </AppBar>
@@ -358,6 +358,7 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                     background: "#fff",
                     display: "flex",
                     alignItems: "center",
+                    height: "65px",
                     // backdropFilter: "blur(8px)",
                     // borderTop: "1px solid rgba(0, 0, 0, 0.1)",
                     // marginTop: "auto"
@@ -394,9 +395,9 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6 }}>
                                 <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                                    <Link href="https://example.com/help" color="primary" underline="hover" variant="body2" sx={{ display: "flex", alignItems: "center" }}>
+                                    {/* <Link href="https://example.com/help" color="primary" underline="hover" variant="body2" sx={{ display: "flex", alignItems: "center" }}>
                                         <HelpOutlineIcon sx={{ fontSize: 16, mr: 0.5 }} /> Precisa de ajuda?
-                                    </Link>
+                                    </Link> */}
                                     {enabledLanguages.length > 1 && (
                                         <LanguageSelector
                                             currentLanguage={currentLanguage}

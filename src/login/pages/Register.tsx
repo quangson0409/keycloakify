@@ -148,7 +148,7 @@ export default function Register(props: RegisterProps) {
     Template,
     classes,
     UserProfileFormFields,
-    doMakeUserConfirmPassword,
+    // doMakeUserConfirmPassword, // Removed since we handle password fields manually
   } = props;
 
   const { kcClsx } = getKcClsx({
@@ -239,7 +239,6 @@ export default function Register(props: RegisterProps) {
     }
   };
 
-  const [isFormSubmittable, setIsFormSubmittable] = useState(false);
   const [areTermsAccepted, setAreTermsAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -392,9 +391,10 @@ export default function Register(props: RegisterProps) {
               kcContext={kcContext}
               i18n={i18n}
               kcClsx={kcClsx}
-              onIsFormSubmittableValueChange={setIsFormSubmittable}
-              doMakeUserConfirmPassword={doMakeUserConfirmPassword}
+              onIsFormSubmittableValueChange={() => { }} // Empty function since we don't use it
+              doMakeUserConfirmPassword={false}
             />
+
 
             {/* Password fields */}
             <Box sx={{ mt: 3 }}>
@@ -484,9 +484,6 @@ export default function Register(props: RegisterProps) {
                 fullWidth
                 variant="contained"
                 size="large"
-                disabled={termsAcceptanceRequired && !areTermsAccepted ||
-                  !isPasswordValid ||
-                  !isConfirmPasswordValid}
                 sx={{ mt: 2, mb: 2 }}
               >
                 {msg("createAccountButton")}
@@ -497,10 +494,6 @@ export default function Register(props: RegisterProps) {
                 fullWidth
                 variant="contained"
                 size="large"
-                disabled={!isFormSubmittable ||
-                  (termsAcceptanceRequired && !areTermsAccepted) ||
-                  !isPasswordValid ||
-                  !isConfirmPasswordValid}
                 sx={{ mb: 2, mt: 2 }}
               >
                 {msg("createAccountButton")}

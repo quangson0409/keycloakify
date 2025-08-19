@@ -13,7 +13,7 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             account: "account",
             loginTooltip: "Access your account with your Audaks Cloud, audaks.com.br",
             signInButton: "Sign In",
-            newUserRegister: "New user?",
+            newUserRegister: "New Account Registration?",
             registerLink: "Register",
             loadingText: "Loading Audaks Cloud...",
             // Register page
@@ -37,14 +37,14 @@ const { useI18n, ofTypeI18n } = i18nBuilder
             privacyPolicy: "Privacy Policy",
             closeButton: "Close"
         },
-        pt: {
+        "pt-BR": {
             welcomeTitle: "Bem-vindo",
             loginWith: "Faça login com sua",
             audaksCloud: "Audaks Cloud",
             account: "conta",
             loginTooltip: "Acesse sua conta com seu Audaks Cloud, audaks.com.br",
             signInButton: "Entrar",
-            newUserRegister: "Novo usuário?",
+            newUserRegister: "Novo registro de conta?",
             registerLink: "Registrar",
             loadingText: "Carregando Audaks Cloud...",
             // Register page
