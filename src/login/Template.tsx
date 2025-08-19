@@ -21,7 +21,7 @@ import {
     CircularProgress,
     Backdrop
 } from "@mui/material";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+// import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { LegalDialog, useLegalDialogs } from "./shared/LegalDialogs";
 import LanguageIcon from "@mui/icons-material/Language";
 
